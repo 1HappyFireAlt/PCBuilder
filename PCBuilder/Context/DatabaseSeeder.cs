@@ -10,32 +10,35 @@ namespace PCBuilder.Context
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public DatabaseSeeder(DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public DatabaseSeeder (DatabaseContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
         public async Task Seed()
         {
             await _context.Database.MigrateAsync();
-
             if (!_context.Users.Any())
             {
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
                 await _roleManager.CreateAsync(new IdentityRole("Customer"));
 
-                var adminEmail = "admin@cheese.com";
-                var adminPassword = "Cheese123!";
+                var adminEmail = "admin@builder.com";
+                var adminPassword = "builder@123";
 
                 var admin = new User
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
+                    Name = "Admin",
+                    Gender = "Male",
+                    DateOfBirth = DateTime.Now,
                 };
 
                 await _userManager.CreateAsync(admin, adminPassword);
-                await _userManager.AddToRoleAsync(admin, "Admin");
+                await _userManager.CreateAsync(admin, "Admin");
             }
         }
     }

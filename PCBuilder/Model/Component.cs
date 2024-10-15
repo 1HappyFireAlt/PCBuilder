@@ -18,6 +18,7 @@ namespace PCBuilder.Model
 
         [Required]
         public int Rating { get; set; }
+        public string? ImageUrl { get; set; }
 
         public ICollection<Builds> Builds { get; set; }
         public ICollection<Basket> Baskets { get; set; }
