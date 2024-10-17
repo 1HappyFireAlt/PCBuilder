@@ -34,7 +34,7 @@ namespace PCBuilder.Context
                     Email = adminEmail,
                     Name = "Admin",
                     Gender = "Male",
-                    DateOfBirth = DateTime.Now,
+                    DateOfBirth = 28/10/2001,
                 };
 
                 await _userManager.CreateAsync(admin, adminPassword);

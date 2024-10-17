@@ -14,7 +14,7 @@ namespace PCBuilder.Model
 
         public string Gender { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public int DateOfBirth { get; set; }
 
         public ICollection<Builds> Builds { get; set; }
         public ICollection<Basket> Baskets { get; set; }

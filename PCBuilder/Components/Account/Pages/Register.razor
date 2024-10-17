@@ -18,31 +18,66 @@
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
 
-<div class="card">
-    <div class="card-body bg-light">
-        <h4 class="card-title">Register</h4>
+<EditForm OnInvalidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+    <DataAnnotationsValidator/>
 
-        <EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
-            <div class="row g-3">
-                <div class="col-md-12">
-                    <label for="email" class="form-label">Email</label>
-                    <InputText class="form-control" placeholder="Email" @bind-Value="Model.Email" />
+    <div class="row">
+        <div class="col-lg-6 col-12 mt-lg-1 mt-1">
+            <div class="card h-100">
+                <div class="card-body bg-light">
+                    <h3>Register</h3>
+                    <h5 class="card-title">About you</h5>
+                    <div class="form-group mb-2">
+                        <label for="firstname">Name</label>
+                        <InputText id="name" class="form-control" placeholder="First Name" @bind-Value="Model.Name" />
+                        <div class="small">
+                            <ValidationMessage For="@(() => Model!.Name)" />
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="lastname">Gender</label>
+                        <InputText id="lastname" class="form-control" placeholder="Last Name" @bind-Value="Model.Gender" />
+                        <div class="small">
+                            <ValidationMessage For="@(() => Model!.Gender)" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="password" class="form-label">Password</label>
-                    <InputText type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
-                </div>
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Confirm Password</label>
-                    <InputText type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                <div class="col-lg-6 col-12 mt-1">
+                    <div class="card h-100">
+                        <div class="card-body bg-light d-flex flex-column">
+                            <h5 class="card-title">Login details</h5>
+
+                            <div class="form-group mb-2">
+                                <label for="email">Email</label>
+                                <InputText id="email" class="form-control" placeholder="you@example.com" @bind-Value="Model.Email" />
+                                <div class="small">
+                                    <ValidationMessage For="@(() => Model!.Email)" />
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label for="password">Password</label>
+                                <InputText id="password" type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
+                                <div class="small">
+                                    <ValidationMessage For="@(() => Model!.Password)" />
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label for="confirm">Confirm Password</label>
+                                <InputText id="confirm" type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                                <div class="small">
+                                    <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
+                                </div>
+                            </div>
+                            <div class="mt-auto mb-2">
+                                <button type="submit" class="btn btn-outline-primary w-100">Register</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </EditForm>
+        </div>
     </div>
-</div>
+</EditForm>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -58,10 +93,13 @@
 
     public async Task RegisterUser(EditContext editContext)
     {
-        var user = Activator.CreateInstance<User>(); ;
-        await UserStore.SetUserNameAsync(user, Model.Email, CancellationToken.None);
-        var emailStore = (IUserEmailStore<User>)UserStore;
-        await emailStore.SetEmailAsync(user, Model.Email, CancellationToken.None);
+        var user = new User
+        {
+                UserName = Model.Email,
+                Email = Model.Email,
+                Name = Model.Name,
+                Gender = Model.Gender,
+        };
         var result = await UserManager.CreateAsync(user, Model.Password);
 
         if (!result.Succeeded)
@@ -70,21 +108,38 @@
             isError = true;
             return;
         }
+        await UserManager.AddToRoleAsync(user, "Customer");
 
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
-
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
     }
 
     private sealed class RegisterModel
     {
+        [Required(ErrorMessage = "Please enter your email.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; } = "";
 
+        [Required(ErrorMessage = "Please enter a password.")]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
+        [Required(ErrorMessage = "Please confirm your password.")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter your first name.")]
+        public string Name { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter your gender.")]
+        public string Gender { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter your date of birth.")]
+        public string DateOfBirth { get; set; } = "";
+
     }
 }
