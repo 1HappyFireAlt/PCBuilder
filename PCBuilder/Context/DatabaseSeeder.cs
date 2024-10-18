@@ -26,7 +26,7 @@ namespace PCBuilder.Context
                 await _roleManager.CreateAsync(new IdentityRole("Customer"));
 
                 var adminEmail = "admin@builder.com";
-                var adminPassword = "builder@123";
+                var adminPassword = "Builder@123";
 
                 var admin = new User
                 {
@@ -38,7 +38,7 @@ namespace PCBuilder.Context
                 };
 
                 await _userManager.CreateAsync(admin, adminPassword);
-                await _userManager.CreateAsync(admin, "Admin");
+                await _userManager.AddToRoleAsync(admin, "Admin");
             }
         }
     }

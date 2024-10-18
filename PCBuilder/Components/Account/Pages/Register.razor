@@ -28,15 +28,15 @@
                     <h3>Register</h3>
                     <h5 class="card-title">About you</h5>
                     <div class="form-group mb-2">
-                        <label for="firstname">Name</label>
-                        <InputText id="name" class="form-control" placeholder="First Name" @bind-Value="Model.Name" />
+                        <label for="name">Name</label>
+                        <InputText id="name" class="form-control" placeholder="Name" @bind-Value="Model.Name" />
                         <div class="small">
                             <ValidationMessage For="@(() => Model!.Name)" />
                         </div>
                     </div>
                     <div class="form-group mb-2">
-                        <label for="lastname">Gender</label>
-                        <InputText id="lastname" class="form-control" placeholder="Last Name" @bind-Value="Model.Gender" />
+                        <label for="gender">Gender</label>
+                        <InputText id="gender" class="form-control" placeholder="Gender" @bind-Value="Model.Gender" />
                         <div class="small">
                             <ValidationMessage For="@(() => Model!.Gender)" />
                         </div>
@@ -139,7 +139,7 @@
         public string Gender { get; set; } = "";
 
         [Required(ErrorMessage = "Please enter your date of birth.")]
-        public string DateOfBirth { get; set; } = "";
+        public int DateOfBirth { get; set; }
 
     }
 }
