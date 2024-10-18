@@ -9,6 +9,7 @@ namespace PCBuilder.Context
         private IWebHostEnvironment _environment;
         public DbSet<User> Users { get; set; }
         public DbSet<Builds> Builds { get; set; }
+        public DbSet<BasketItem> BasketItems { get; set; }
         public DbSet<Component> Components { get; set; }
         public DbSet<Basket> Baskets { get; set; }
         public DbSet<Community> Communities { get; set; }

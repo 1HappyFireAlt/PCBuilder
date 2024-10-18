@@ -5,12 +5,13 @@ namespace PCBuilder.Model
 {
     public class Basket
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
 
-        [Required]
-        public string Payment { get; set; }
+        public List<BasketItem> Items { get; set; } = new List<BasketItem>(); 
 
-        public User User { get; set; }
-        public Component Component { get; set; }
+        public float GetTotalPrice()
+        {
+            return Items.Sum(i => i.TotalPrice);
+        }
     }
 }
