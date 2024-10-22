@@ -1,0 +1,113 @@
+﻿@page "/store"
+@using System.ComponentModel.DataAnnotations
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavigationManager
+
+<h3>Basket</h3>
+@page "/checkout"
+@inject NavigationManager NavigationManager
+
+<h3>Checkout</h3>
+
+@if (ShoppingCart.Count == 0)
+{
+    <p>Your cart is empty. Please add items to your cart before checking out.</p>
+    <div>
+        <button @onclick="GoToStore" class="btn btn-outline-primary">Back to store</button>
+    </div>
+}
+else
+{
+    <EditForm Model="Order" OnValidSubmit="SubmitOrder">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <InputText id="fullName" class="form-control" @bind-Value="Order.FullName" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <InputText id="address" class="form-control" @bind-Value="Order.Address" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="Order.Email" type="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="creditCard" class="form-label">Credit Card</label>
+            <InputText id="creditCard" class="form-control" @bind-Value="Order.CreditCardNumber" required />
+        </div>
+
+        <h4>Your Cart</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ShoppingCart)
+                {
+                    <tr>
+                        <td>@item.Product.ComponentName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Product.Price.ToString("C")</td>
+                        <td>@item.TotalPrice.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h4>Total: @ShoppingCart.Sum(i => i.TotalPrice).ToString("C")</h4>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private List<BasketItem> ShoppingCart { get; set; } = new List<BasketItem>();
+    private OrderModel Order = new OrderModel();
+
+    protected override void OnInitialized()
+    {
+        ShoppingCart = GetShoppingCartFromSession();
+    }
+
+    private void GoToStore()
+    {
+        NavigationManager.NavigateTo("/store");
+    }
+
+    private List<BasketItem> GetShoppingCartFromSession()
+    {
+        return new List<BasketItem>
+        {
+            new BasketItem { Product = new Component { ComponentName = "Component A", Price = 20.99f }, Quantity = 2 },
+            new BasketItem { Product = new Component { ComponentName = "Component B", Price = 35.50f }, Quantity = 1 }
+        };
+    }
+
+    private void SubmitOrder()
+    {
+        Console.WriteLine("Order Submitted:");
+        Console.WriteLine($"Name: {Order.FullName}");
+        Console.WriteLine($"Address: {Order.Address}");
+        Console.WriteLine($"Email: {Order.Email}");
+        Console.WriteLine($"Credit Card: {Order.CreditCardNumber}");
+
+        ShoppingCart.Clear();
+        NavigationManager.NavigateTo("/thankyou");
+    }
+}

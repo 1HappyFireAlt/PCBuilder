@@ -1,0 +1,97 @@
+﻿@page "/basket"
+@using System.ComponentModel.DataAnnotations
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavigationManager
+
+<h3>Basket</h3>
+
+@if (ShoppingCart.Count == 0)
+{
+    <p>Your cart is empty</p>
+    <div>
+        <button @onclick="GoToStore" class="btn btn-outline-primary">Back to store</button>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between">
+        <div>
+            <h3>Shopping Cart</h3>
+        </div>
+        <div>
+            <button @onclick="GoToCheckout" class="btn btn-outline-primary">Checkout</button>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ShoppingCart)
+            {
+                <tr>
+                    <td>@item.Product.ComponentName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.TotalPrice.ToString("C")</td>
+                    <td>
+                        <button @onclick="() => RemoveItem(item)" class="btn btn-danger">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Total Price: @ShoppingCart.Sum(i => i.TotalPrice).ToString("C")</h4>
+}
+
+@code {
+    [Parameter] public List<BasketItem> Items { get; set; }
+    [Parameter] public bool IsEditable { get; set; }
+
+    private void RemoveItem(BasketItem item)
+    {
+        ShoppingCart.Remove(item);
+        SaveShoppingCartToSession(ShoppingCart);
+    }
+    private List<BasketItem> ShoppingCart { get; set; } = new List<BasketItem>();
+
+    protected override void OnInitialized()
+    {
+        ShoppingCart = GetShoppingCartFromSession();
+    }
+
+    private void GoToStore()
+    {
+        NavigationManager.NavigateTo("/store");
+    }
+
+    private void GoToCheckout()
+    {
+        NavigationManager.NavigateTo("/basket");
+    }
+
+    private List<BasketItem> GetShoppingCartFromSession()
+    {
+        return new List<BasketItem>
+        {
+            new BasketItem { Product = new Component { ComponentName = "Product A", Price = 50.00f }, Quantity = 1 },
+            new BasketItem { Product = new Component { ComponentName = "Product B", Price = 30.00f }, Quantity = 2 }
+        };
+    }
+
+    private void SaveShoppingCartToSession(List<BasketItem> cart)
+    {
+    }
+}
+}

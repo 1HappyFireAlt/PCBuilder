@@ -1,0 +1,26 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+<h3>StoreItem</h3>
+
+<div class="card h-100">
+    <img src="component.png" class="card-img-top" alt="@Component.ComponentName">
+    <div class="card-body">
+        <h5 class="card-title">@Component.ComponentName</h5>
+        <p class="card-text">@Component.Brand</p>
+        <p class="card-text">@Component.Price.ToString("C")</p>
+        <p class="card-text">Rating: @Component.Rating/5</p>
+        <button class="btn btn-primary" @onclick="AddToCart">Add to Cart</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Component Component { get; set; }
+
+    private void AddToCart()
+    {
+        ShoppingCart.AddItem(Component);
+    }
+}
