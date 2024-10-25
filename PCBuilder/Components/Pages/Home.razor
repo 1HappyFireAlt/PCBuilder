@@ -1,6 +1,7 @@
 ﻿@page "/store"
 @using System.ComponentModel.DataAnnotations
 @using PCBuilder.Components.Account.Shared
+@using PCBuilder.Context
 @using PCBuilder.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
@@ -34,7 +35,7 @@ else if (!components.Any())
             <input type="text" class="form-control" placeholder="Search for components..." @bind="searchTerm" @bind:event="oninput" />
         </div>
         <div class="d-flex justify-content-end mt-2 mt-md-0">
-            <a @onclick="GoToCart" class="btn btn-outline-primary">🛒Cart (@ShoppingCart.Count())
+            <a @onclick="GoToCart" class="btn btn-outline-primary">🛒Cart (@Basket.Count())
             </a>
         </div>
     </div>
@@ -75,7 +76,7 @@ else if (!components.Any())
     {
         components = await ComponentProvider.GetAllComponentsAsync();
         filteredComponents = components;
-        ShoppingCart.OnCartUpdated += StateHasChanged;
+        Basket.OnCartUpdated += StateHasChanged;
     }
 
     private void GoToCart()
@@ -88,7 +89,7 @@ else if (!components.Any())
         sortCriteria = criteria;
         filteredComponents = criteria switch
         {
-            SortCriteria.Name => FilteredComponents = filteredComponents.OrderBy(c => c.ComponentName),
+            SortCriteria.Name => FilteredComponents = filteredComponents.OrderBy(c => c.Name),
             SortCriteria.Price => FilteredComponents = filteredComponents.OrderBy(c => c.Price),
             SortCriteria.Brand => FilteredComponents = filteredComponents.OrderBy(c => c.Brand),
             SortCriteria.Rating => FilteredComponents = filteredComponents.OrderBy(c => c.Rating),
@@ -100,7 +101,7 @@ else if (!components.Any())
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return true;
 
-        return component.ComponentName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+        return component.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
             || component.Brand.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
     }
 

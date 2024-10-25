@@ -25,7 +25,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<ComponentProvider>();
 builder.Services.AddScoped<Basket>();
+
 
 builder.Services.AddIdentityCore<User>()
     .AddRoles<IdentityRole>()

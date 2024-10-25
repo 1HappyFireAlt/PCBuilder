@@ -8,7 +8,7 @@ namespace PCBuilder.Model
         public int Id { get; set; }
 
         [Required]
-        public string ComponentName { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string Brand { get; set; }
@@ -22,5 +22,6 @@ namespace PCBuilder.Model
 
         public ICollection<Builds> Builds { get; set; }
         public ICollection<Basket> Baskets { get; set; }
+        public ICollection<BasketItem> BasketItems { get; set; }
     }
 }

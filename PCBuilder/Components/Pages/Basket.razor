@@ -19,7 +19,7 @@ else
 {
     <div class="d-flex justify-content-between">
         <div>
-            <h3>Shopping Cart</h3>
+            <h3>Basket</h3>
         </div>
         <div>
             <button @onclick="GoToCheckout" class="btn btn-outline-primary">Checkout</button>
@@ -40,7 +40,7 @@ else
             @foreach (var item in ShoppingCart)
             {
                 <tr>
-                    <td>@item.Product.ComponentName</td>
+                    <td>@item.Product.Name</td>
                     <td>@item.Quantity</td>
                     <td>@item.Product.Price.ToString("C")</td>
                     <td>@item.TotalPrice.ToString("C")</td>
@@ -85,8 +85,8 @@ else
     {
         return new List<BasketItem>
         {
-            new BasketItem { Product = new Component { ComponentName = "Product A", Price = 50.00f }, Quantity = 1 },
-            new BasketItem { Product = new Component { ComponentName = "Product B", Price = 30.00f }, Quantity = 2 }
+            new BasketItem { Product = new Component { Name = "Product A", Price = 50.00f }, Quantity = 1 },
+            new BasketItem { Product = new Component { Name = "Product B", Price = 30.00f }, Quantity = 2 }
         };
     }
 

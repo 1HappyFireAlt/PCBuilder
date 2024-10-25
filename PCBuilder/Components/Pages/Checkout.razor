@@ -59,7 +59,7 @@ else
                 @foreach (var item in ShoppingCart)
                 {
                     <tr>
-                        <td>@item.Product.ComponentName</td>
+                        <td>@item.Product.Name</td>
                         <td>@item.Quantity</td>
                         <td>@item.Product.Price.ToString("C")</td>
                         <td>@item.TotalPrice.ToString("C")</td>
@@ -94,8 +94,8 @@ else
     {
         return new List<BasketItem>
         {
-            new BasketItem { Product = new Component { ComponentName = "Component A", Price = 20.99f }, Quantity = 2 },
-            new BasketItem { Product = new Component { ComponentName = "Component B", Price = 35.50f }, Quantity = 1 }
+            new BasketItem { Product = new Component { Name = "Component A", Price = 20.99f }, Quantity = 2 },
+            new BasketItem { Product = new Component { Name = "Component B", Price = 35.50f }, Quantity = 1 }
         };
     }
 

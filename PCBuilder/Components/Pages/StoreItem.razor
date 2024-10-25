@@ -1,14 +1,15 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using PCBuilder.Components.Account.Shared
+@using PCBuilder.Context
 @using PCBuilder.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 <h3>StoreItem</h3>
 
 <div class="card h-100">
-    <img src="component.png" class="card-img-top" alt="@Component.ComponentName">
+    <img src="component.png" class="card-img-top" alt="@Component.Name">
     <div class="card-body">
-        <h5 class="card-title">@Component.ComponentName</h5>
+        <h5 class="card-title">@Component.Name</h5>
         <p class="card-text">@Component.Brand</p>
         <p class="card-text">@Component.Price.ToString("C")</p>
         <p class="card-text">Rating: @Component.Rating/5</p>
@@ -17,10 +18,12 @@
 </div>
 
 @code {
-    [Parameter] public Component Component { get; set; }
+    [Parameter] 
+    public Component Component { get; set; }
+    private int quantity = 1;
 
     private void AddToCart()
     {
-        ShoppingCart.AddItem(Component);
+        Basket.AddItem(Component);
     }
 }

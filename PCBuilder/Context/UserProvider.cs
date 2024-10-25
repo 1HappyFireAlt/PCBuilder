@@ -37,6 +37,11 @@ namespace PCBuilder.Context
         {
             await _userManager.RemoveFromRoleAsync(user, "Admin");
         }
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.Include(user => user.Orders)
+                         .OrderBy(user => user.Name).ToListAsync();
+        }
     }
 }
 

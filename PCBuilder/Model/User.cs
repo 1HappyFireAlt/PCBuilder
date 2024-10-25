@@ -9,6 +9,7 @@ namespace PCBuilder.Model
         public string Name { get; set; }
         public string Gender { get; set; }
         public int DateOfBirth { get; set; }
+        public List<Order> Orders { get; set; } = [];
 
         public ICollection<Builds> Builds { get; set; }
         public ICollection<Basket> Baskets { get; set; }
