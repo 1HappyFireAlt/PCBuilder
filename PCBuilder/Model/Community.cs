@@ -20,6 +20,6 @@ namespace PCBuilder.Model
         public int Rating { get; set; }
 
         public ICollection<Builds> Builds { get; set; }
-        public ICollection<Basket> Baskets { get; set; }
+        public ICollection<ShopBasket> Baskets { get; set; }
     }
 }

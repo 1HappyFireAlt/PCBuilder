@@ -21,7 +21,6 @@ namespace PCBuilder.Model
         public string? ImageUrl { get; set; }
 
         public ICollection<Builds> Builds { get; set; }
-        public ICollection<Basket> Baskets { get; set; }
-        public ICollection<BasketItem> BasketItems { get; set; }
+        public ICollection<ShopBasket> Baskets { get; set; }
     }
 }

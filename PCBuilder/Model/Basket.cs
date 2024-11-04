@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PCBuilder.Model
 {
-    public class Basket
+    public class ShopBasket
     {
         public int Id { get; set; }
         public Component Component { get; set; }
@@ -15,7 +15,7 @@ namespace PCBuilder.Model
         {
             return _items.Count;
         }
-        public Basket()
+        public ShopBasket()
         {
             _items = [];
         }

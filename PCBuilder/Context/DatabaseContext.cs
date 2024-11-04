@@ -11,7 +11,7 @@ namespace PCBuilder.Context
         public DbSet<Builds> Builds { get; set; }
         public DbSet<BasketItem> BasketItems { get; set; }
         public DbSet<Component> Components { get; set; }
-        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<ShopBasket> Baskets { get; set; }
         public DbSet<Community> Communities { get; set; }
         public DatabaseContext(DbContextOptions<DatabaseContext> options, IWebHostEnvironment environment) : base(options)
         {
