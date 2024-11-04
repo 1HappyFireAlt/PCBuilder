@@ -1,4 +1,5 @@
 ﻿using PCBuilder.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace PCBuilder.Context
 {

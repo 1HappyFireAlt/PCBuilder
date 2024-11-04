@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @inject NavigationManager NavigationManager
+@inject ComponentProvider ComponentProvider
 
 <PageTitle>Home</PageTitle>
 
@@ -72,6 +73,7 @@ else if (!components.Any())
         }
     }
 
+
     protected override async Task OnInitializedAsync()
     {
         components = await ComponentProvider.GetAllComponentsAsync();
@@ -79,7 +81,7 @@ else if (!components.Any())
         Basket.OnCartUpdated += StateHasChanged;
     }
 
-    private void GoToCart()
+    private void GoToCart() 
     {
         NavigationManager.NavigateTo("/cart");
     }
