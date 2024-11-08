@@ -42,7 +42,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-12 mt-1">
+                <div class="col-12 mt-1">
                     <div class="card h-100">
                         <div class="card-body bg-light d-flex flex-column">
                             <h5 class="card-title">Login details</h5>
@@ -55,12 +55,16 @@
                                 </div>
                             </div>
                             <div class="form-group mb-2">
-                                <label for="confirm">Date of Birth</label>
-                                <InputText id="confirm" type="DateOfBirth" class="form-control" placeholder="Confirm Password" @bind-Value="Model.DateOfBirth" />
-                                <input type="date" value="yyyy-mm-dd" />
+                                <label for="dateofbirth">Date of Birth</label>
+                                <InputDate id="dateofbirth" class="form-control" @bind-Value="Model.DateOfBirth"
+                                           min="@MinDate" max="@MaxDate"
+                                           placeholder="MM/DD/YYYY" />
                                 <div class="small">
-                                    <ValidationMessage For="@(() => Model!.DateOfBirth)" />
+                                    <ValidationMessage For="@(() => Model.DateOfBirth)" />
                                 </div>
+                                <small class="form-text text-muted">
+                                    You must be at least 13 years old to register.
+                                </small>
                             </div>
                             <div class="form-group mb-2">
                                 <label for="password">Password</label>
@@ -99,6 +103,10 @@
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
 
+    private DateTime DateOfBirth { get; set; } = DateTime.Now;
+    private DateTime MaxDate => DateTime.Today.AddYears(-15);
+    private DateTime MinDate => DateTime.Today.AddYears(-100);
+
     public async Task RegisterUser(EditContext editContext)
     {
         var user = new User
@@ -107,7 +115,9 @@
                 Email = Model.Email,
                 Name = Model.Name,
                 Gender = Model.Gender,
+                DateOfBirth = Model.DateOfBirth,
         };
+
 
         var result = await UserManager.CreateAsync(user, Model.Password);
 
@@ -147,8 +157,9 @@
         [Required(ErrorMessage = "Please enter your gender.")]
         public string Gender { get; set; } = "";
 
-        [Required(ErrorMessage = "Please enter your date of birth.")]
-        public string DateOfBirth { get; set; }
+        [Required(ErrorMessage = "Please enter your date of birth")]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
 
     }
 }
