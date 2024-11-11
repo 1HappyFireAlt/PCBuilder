@@ -18,13 +18,13 @@
 <PageTitle>Register</PageTitle>
 <StatusMessage Message="@statusMessage" IsError="@isError" />
 
-<EditForm OnInvalidSubmit="RegisterUser" Model="Model" FormName="registerForm">
+<EditForm OnValidSubmit="RegisterUser" Model="Model" FormName="registerForm">
     <DataAnnotationsValidator/>
 
     <div class="row">
         <div class="col-lg-6 col-12 mt-lg-1 mt-1">
-            <div class="card h-100">
-                <div class="card-body bg-light">
+            <div class="card";">
+                <div class="card-body">
                     <h3>Register</h3>
                     <h5 class="card-title">About you</h5>
                     <div class="form-group mb-2">
@@ -41,50 +41,46 @@
                             <ValidationMessage For="@(() => Model!.Gender)" />
                         </div>
                     </div>
-                </div>
-                <div class="col-12 mt-1">
-                    <div class="card h-100">
-                        <div class="card-body bg-light d-flex flex-column">
-                            <h5 class="card-title">Login details</h5>
-
-                            <div class="form-group mb-2">
-                                <label for="email">Email</label>
-                                <InputText id="email" class="form-control" placeholder="you@example.com" @bind-Value="Model.Email" />
-                                <div class="small">
-                                    <ValidationMessage For="@(() => Model!.Email)" />
-                                </div>
-                            </div>
-                            <div class="form-group mb-2">
-                                <label for="dateofbirth">Date of Birth</label>
-                                <InputDate id="dateofbirth" class="form-control" @bind-Value="Model.DateOfBirth"
-                                           min="@MinDate" max="@MaxDate"
-                                           placeholder="MM/DD/YYYY" />
-                                <div class="small">
-                                    <ValidationMessage For="@(() => Model.DateOfBirth)" />
-                                </div>
-                                <small class="form-text text-muted">
-                                    You must be at least 13 years old to register.
-                                </small>
-                            </div>
-                            <div class="form-group mb-2">
-                                <label for="password">Password</label>
-                                <InputText id="password" type="password" class="form-control" placeholder="Password" @bind-Value="Model.Password" />
-                                <div class="small">
-                                    <ValidationMessage For="@(() => Model!.Password)" />
-                                </div>
-                            </div>
-                            <div class="form-group mb-2">
-                                <label for="confirm">Confirm Password</label>
-                                <InputText id="confirm" type="password" class="form-control" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
-                                <div class="small">
-                                    <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
-                                </div>
-                            </div>
-                            <div class="mt-auto mb-2">
-                                <button type="submit" class="btn btn-outline-primary w-100">Register</button>
+                
+                    <form class="row g-3">
+                        <h5 class="card-title">Login details</h5>
+                        <div class="form-group mb-2">
+                            <label for="email" class="form-label">Email</label>
+                            <InputText id="email" class="form-control border-success" placeholder="you@example.com" @bind-Value="Model.Email" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.Email)" />
                             </div>
                         </div>
-                    </div>
+                        <div class="form-group mb-2">
+                            <label for="dateofbirth" class="form-label">Date of Birth</label>
+                            <InputDate id="dateofbirth" class="form-control border-success" @bind-Value="Model.DateOfBirth"
+                            min="@MinDate" max="@MaxDate"
+                            placeholder="MM/DD/YYYY" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model.DateOfBirth)" />
+                            </div>
+                            <small class="form-text text-muted">
+                                You must be at least 13 years old to register.
+                            </small>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="password">Password</label>
+                            <InputText id="password" type="password" class="form-control border-success" placeholder="Password" @bind-Value="Model.Password" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.Password)" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="confirm">Confirm Password</label>
+                            <InputText id="confirm" type="password" class="form-control border-success" placeholder="Confirm Password" @bind-Value="Model.ConfirmPassword" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.ConfirmPassword)" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -103,9 +99,16 @@
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
 
-    private DateTime DateOfBirth { get; set; } = DateTime.Now;
-    private DateTime MaxDate => DateTime.Today.AddYears(-15);
-    private DateTime MinDate => DateTime.Today.AddYears(-100);
+    private DateTime MaxDate => GetSafeDate(DateTime.Today.AddYears(-15));
+    private DateTime MinDate => GetSafeDate(DateTime.Today.AddYears(-100));
+    private DateTime GetSafeDate(DateTime calculatedDate)
+    {
+        if (calculatedDate < DateTime.MinValue)
+            return DateTime.MinValue;
+        if (calculatedDate > DateTime.MaxValue)
+            return DateTime.MaxValue;
+        return calculatedDate;
+    }
 
     public async Task RegisterUser(EditContext editContext)
     {
@@ -158,8 +161,7 @@
         public string Gender { get; set; } = "";
 
         [Required(ErrorMessage = "Please enter your date of birth")]
-        [DataType(DataType.Date)]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
     }
 }
