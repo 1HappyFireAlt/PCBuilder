@@ -5,6 +5,7 @@
 @using System.Text.Encodings.Web
 @using PCBuilder.Components.Account.Shared
 @using PCBuilder.Model
+@using BlazorDateRangePicker
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
@@ -53,9 +54,8 @@
                         </div>
                         <div class="form-group mb-2">
                             <label for="dateofbirth" class="form-label">Date of Birth</label>
-                            <InputDate id="dateofbirth" class="form-control border-success" @bind-Value="Model.DateOfBirth"
-                            min="@MinDate" max="@MaxDate"
-                            placeholder="MM/DD/YYYY" />
+                            <input type="text" id="dateofbirth" class="form-control"
+                                   placeholder="MM/DD/YYYY" @oninput="OnDateInput" />
                             <div class="small">
                                 <ValidationMessage For="@(() => Model.DateOfBirth)" />
                             </div>
@@ -92,23 +92,48 @@
 
     [SupplyParameterFromForm]
     private RegisterModel Model { get; set; } = new();
-
+    private string ValidationMessage { get; set; } = string.Empty;
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    private void OnDateInput(ChangeEventArgs e)
+    {
+        ValidationMessage = string.Empty;
+
+        if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
+        {
+            if (IsValidAge(parsedDate, 15))
+            {
+                Model.DateOfBirth = parsedDate; 
+            }
+            else
+            {
+                ValidationMessage = "You must be at least 15 years old to register.";
+            }
+        }
+        else
+        {
+            ValidationMessage = "Invalid date format. Please use MM/DD/YYYY.";
+        }
+    }
+    private bool IsValidAge(DateTime dateOfBirth, int minimumAge)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - dateOfBirth.Year;
+
+        if (dateOfBirth.Date > today.AddYears(-age)) age--;
+
+        return age >= minimumAge;
+    }
+
+    void ResetClick(MouseEventArgs e, DateRangePicker picker)
+    {
+        picker.Close();
+        picker.OnRangeSelect.InvokeAsync(new DateRange());
+    }
+
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;
-
-    private DateTime MaxDate => GetSafeDate(DateTime.Today.AddYears(-15));
-    private DateTime MinDate => GetSafeDate(DateTime.Today.AddYears(-100));
-    private DateTime GetSafeDate(DateTime calculatedDate)
-    {
-        if (calculatedDate < DateTime.MinValue)
-            return DateTime.MinValue;
-        if (calculatedDate > DateTime.MaxValue)
-            return DateTime.MaxValue;
-        return calculatedDate;
-    }
 
     public async Task RegisterUser(EditContext editContext)
     {
