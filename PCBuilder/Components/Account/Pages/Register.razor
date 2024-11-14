@@ -54,8 +54,7 @@
                         </div>
                         <div class="form-group mb-2">
                             <label for="dateofbirth" class="form-label">Date of Birth</label>
-                            <input type="text" id="dateofbirth" class="form-control"
-                                   placeholder="MM/DD/YYYY" @oninput="OnDateInput" />
+                            <input type="text" id="dateofbirth" class="form-control" @bind="DateOfBirthInput" placeholder="MM/DD/YYYY" />
                             <div class="small">
                                 <ValidationMessage For="@(() => Model.DateOfBirth)" />
                             </div>
@@ -95,41 +94,13 @@
     private string ValidationMessage { get; set; } = string.Empty;
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+    private string DateOfBirthInput { get; set; } = string.Empty;
 
-    private void OnDateInput(ChangeEventArgs e)
+    private void HandleValidSubmit()
     {
-        ValidationMessage = string.Empty;
+        DateTime.TryParse(DateOfBirthInput, out DateTime parsedDate);
+        Model.DateOfBirth = parsedDate;
 
-        if (DateTime.TryParse(e.Value?.ToString(), out var parsedDate))
-        {
-            if (IsValidAge(parsedDate, 15))
-            {
-                Model.DateOfBirth = parsedDate; 
-            }
-            else
-            {
-                ValidationMessage = "You must be at least 15 years old to register.";
-            }
-        }
-        else
-        {
-            ValidationMessage = "Invalid date format. Please use MM/DD/YYYY.";
-        }
-    }
-    private bool IsValidAge(DateTime dateOfBirth, int minimumAge)
-    {
-        var today = DateTime.Today;
-        var age = today.Year - dateOfBirth.Year;
-
-        if (dateOfBirth.Date > today.AddYears(-age)) age--;
-
-        return age >= minimumAge;
-    }
-
-    void ResetClick(MouseEventArgs e, DateRangePicker picker)
-    {
-        picker.Close();
-        picker.OnRangeSelect.InvokeAsync(new DateRange());
     }
 
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
