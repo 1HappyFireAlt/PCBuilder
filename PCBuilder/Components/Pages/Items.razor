@@ -1,0 +1,96 @@
+﻿@page "/components"
+@using System.ComponentModel.DataAnnotations
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Context
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavigationManager
+@inject ComponentProvider ComponentProvider
+@inject ShopBasket Basket;
+
+<PageTitle>Components</PageTitle>
+
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <div class="w-50 p-0">
+            <div class="d-flex">
+                <input type="text" class="form-control" placeholder="Search for components..." @bind="searchTerm" @bind:event="oninput" />
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item">Brands</a></li>
+                    <li><a class="dropdown-item">Rating</a></li>
+                    <li><a class="dropdown-item">Price</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <a @onclick="GoToCart" class="btn btn-outline-primary">
+                🛒Cart (@Basket.Count())
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private void GoToCart()
+    {
+        NavigationManager.NavigateTo("/basket");
+    }
+
+    private IEnumerable<Component> components;
+    private string searchTerm = "";
+    private SortCriteria sortCriteria = SortCriteria.Name;
+
+    private IEnumerable<Component> filteredComponents;
+    private IEnumerable<Component> FilteredComponents
+    {
+        get
+        {
+            return filteredComponents.Where(GetSearchCriteria);
+        }
+        set
+        {
+            filteredComponents = value;
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        components = await ComponentProvider.GetAllComponentsAsync();
+        filteredComponents = components;
+        Basket.OnCartUpdated += StateHasChanged;
+    }
+    private void Sort(SortCriteria criteria)
+    {
+        sortCriteria = criteria;
+        filteredComponents = criteria switch
+        {
+            SortCriteria.Name => FilteredComponents = filteredComponents.OrderBy(c => c.Name),
+            SortCriteria.Price => FilteredComponents = filteredComponents.OrderBy(c => c.Price),
+            SortCriteria.Brand => FilteredComponents = filteredComponents.OrderBy(c => c.Brand),
+            SortCriteria.Rating => FilteredComponents = filteredComponents.OrderBy(c => c.Rating),
+            _ => filteredComponents
+        };
+    }
+
+    private bool GetSearchCriteria(Component component)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm)) return true;
+
+        return component.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || component.Brand.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private enum SortCriteria
+    {
+        Name,
+        Price,
+        Brand,
+        Rating
+    }
+}
