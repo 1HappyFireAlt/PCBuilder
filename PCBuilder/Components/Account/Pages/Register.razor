@@ -30,14 +30,19 @@
                     <h5 class="card-title">About you</h5>
                     <div class="form-group mb-2">
                         <label for="name">Name</label>
-                        <InputText id="name" class="form-control" placeholder="Name" @bind-Value="Model.Name" />
+                        <InputText id="name" class="form-control border-success" placeholder="Name" @bind-Value="Model.Name" />
                         <div class="small">
                             <ValidationMessage For="@(() => Model!.Name)" />
                         </div>
                     </div>
                     <div class="form-group mb-2">
-                        <label for="gender">Gender</label>
-                        <InputText id="gender" class="form-control" placeholder="Gender" @bind-Value="Model.Gender" />
+                        <label for="gender" class="form-label">Gender</label>
+                        <InputSelect class="form-control border-success" @bind-Value="Model.Gender" placeholder="Select Gender">
+                                <option value="Male" selected>Male</option>
+                                <option value="Female" selected>Female</option>
+                                <option value="Other" selected>Other</option>
+                                <option value="Rather not say" selected>Rather not say</option>
+                        </InputSelect>
                         <div class="small">
                             <ValidationMessage For="@(() => Model!.Gender)" />
                         </div>
@@ -55,9 +60,9 @@
                         </div>
                         <div class="form-group mb-2">
                             <label for="dateofbirth" class="form-label">Date of Birth</label>
-                            <input type="text" id="dateofbirth" class="form-control" @bind="DateOfBirthInput" placeholder="MM/DD/YYYY" />
+                            <InputDate id="dateofbirth" class="form-control border-success" @bind-Value="Model.DateOfBirth" placeholder="MM/DD/YYYY" />
                             <div class="small">
-                                <ValidationMessage For="@(() => Model.DateOfBirth)" />
+                                <ValidationMessage For="@(() => Model!.DateOfBirth)" />
                             </div>
                             <small class="form-text text-muted">
                                 You must be at least 13 years old to register.
@@ -95,14 +100,6 @@
     private string ValidationMessage { get; set; } = string.Empty;
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
-    private string DateOfBirthInput { get; set; } = string.Empty;
-
-    private void HandleValidSubmit()
-    {
-        DateTime.TryParse(DateOfBirthInput, out DateTime parsedDate);
-        Model.DateOfBirth = parsedDate;
-
-    }
 
     private string? statusMessage => identityErrors is null ? null : string.Join(" ", identityErrors.Select(error => error.Description));
     private bool isError;

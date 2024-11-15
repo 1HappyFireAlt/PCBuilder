@@ -39,6 +39,20 @@ namespace PCBuilder.Context
                 await _userManager.CreateAsync(admin, adminPassword);
                 await _userManager.AddToRoleAsync(admin, "Admin");
             }
+            if (!_context.Components.Any())
+            {
+                var component = GetComponents();
+                _context.Components.AddRange(component);
+                await _context!.SaveChangesAsync();
+            }
+        }
+
+        private List<Component> GetComponents()
+        {
+            return 
+                [
+                
+                ];
         }
     }
 }
