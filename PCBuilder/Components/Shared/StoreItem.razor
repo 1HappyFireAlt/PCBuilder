@@ -1,32 +1,58 @@
 ﻿@using System.ComponentModel.DataAnnotations
-@using PCBuilder.Components.Account.Shared
 @using PCBuilder.Context
 @using PCBuilder.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-
 @inject ShopBasket Basket
 
-<h3>StoreItem</h3>
-
 <div class="card h-100">
-    <img src="component.png" class="card-img-top" alt="@Component.Name">
-    <div class="card-body">
-        <h5 class="card-title">@Component.Name</h5>
-        <p class="card-text">@Component.Brand</p>
-        <p class="card-text">@Component.Price.ToString("C")</p>
-        <p class="card-text">Rating: @Component.Rating/5</p>
-        <button class="btn btn-primary" @onclick="AddToCart">Add to Cart</button>
+    <img src="/img/cheeses/@Component.ImageUrl" class="card-img-top p-1" alt="@Component.Name" onerror="this.onerror = null; this.src='/img/no_cheese.png'">
+    <div class="card-body d-flex flex-column">
+        <h5>
+            <span class="badge bg-primary">@Component.Brand</span>
+            <span class="badge bg-success">@Component.Rating</span>
+        </h5>
+        <h5><span class="badge bg-danger">@Component.Price.ToString("C")</span></h5>
+        <div class="d-flex flex-column flex-sm-row justify-content-betweem">
+            <h5 class="card-title">@Component.Name</h5>
+        </div>
+        <div class="mt-auto">
+            <EditForm Model="quantity" OnSubmit="AddToCart">
+                <div class="row">
+                    <div class="col-lg-6 col-12">
+                        <InputSelect class="form-select w-100" @bind-Value="quantity" required>
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">@(i * 100)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-lg-6 col-12 mt-lg-0 mt-1">
+                        <button class="btn btn-primary position-relative w-100">
+                            Add to cart
+                            @if (Basket.GetQuantity(Component) > 0)
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    @(Basket.GetQuantity(Component) * 100)
+                                    <span class="visually-hidden">@Component.Name in shopping cart</span>
+                                </span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
     </div>
 </div>
 
 @code {
     [Parameter] 
     public Component Component { get; set; }
+
     private int quantity = 1;
 
-    private void AddToCart()
+    public async Task AddToCart()
     {
-        Basket.AddItem(Component);
+        Basket.AddItem(Component, quantity);
     }
 }

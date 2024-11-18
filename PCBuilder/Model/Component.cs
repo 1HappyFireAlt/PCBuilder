@@ -15,6 +15,7 @@ namespace PCBuilder.Model
 
         [Required]
         public float Price { get; set; }
+        public int Quantity { get; set; }
 
         [Required]
         public int Rating { get; set; }

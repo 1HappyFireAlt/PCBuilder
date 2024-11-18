@@ -7,7 +7,6 @@
         public Component Component { get; set; }
         public Component Product { get; set; } 
         public int Quantity { get; set; }
-
         public float TotalPrice => Product.Price * Quantity;
     }
 }
