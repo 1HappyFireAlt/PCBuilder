@@ -6,18 +6,10 @@ namespace PCBuilder.Model
     public class Component
     { 
         public int Id { get; set; }
-
-        [Required]
         public string Name { get; set; }
-
-        [Required]
         public string Brand { get; set; }
-
-        [Required]
         public float Price { get; set; }
         public int Quantity { get; set; }
-
-        [Required]
         public int Rating { get; set; }
         public string? ImageUrl { get; set; }
 

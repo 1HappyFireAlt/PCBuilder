@@ -14,7 +14,7 @@ namespace PCBuilder.Context
 
         public async Task<List<Component>> GetAllComponentsAsync()
         {
-            return await _context.Components.OrderBy(component => component.Name).ToListAsync();
+            return await _context.Components.OrderBy(Component => Component.Name).ToListAsync();
         }
 
         public Component? GetComponent(int id)
