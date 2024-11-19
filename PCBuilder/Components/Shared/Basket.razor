@@ -1,0 +1,88 @@
+﻿@page "/basket"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject ProtectedSessionStorage ProtectedSessionStorage
+@inject BasketItem BasketItem
+@inject Basket Basket
+@inject NavigationManager NavigationManager
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Basket)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.TotalPrice.ToString("C")</td>
+                    <td>
+                        <button @onclick="() => RemoveItem(item)" class="btn btn-danger">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        <div>
+        <h4>Total Price: @BasketItem.Sum(i => i.TotalPrice).ToString("C")</h4>
+        </div>
+        <div>
+            <button @onclick="GoToCheckout" class="btn btn-outline-primary">Checkout</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsEditable { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        Basket.OnCartUpdated += async () => await CartUpdated();
+    }
+
+    private async Task CartUpdated()
+    {
+        StateHasChanged();
+        await ProtectedSessionStorage.SetAsync("cart", Basket.GetItems());
+    }
+
+    private void RemoveItem(BasketItem item)
+    {
+        Basket.RemoveItem(item.Component);
+    }
+
+    private void IncreaseQuantity(BasketItem item)
+    {
+        Basket.AddItem(item.Component, 1);
+    }
+
+    private void DecreaseQuantity(BasketItem item)
+    {
+        Basket.RemoveItem(item.Component, 1);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        StateHasChanged();
+    }
+
+    private void GoToStore()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

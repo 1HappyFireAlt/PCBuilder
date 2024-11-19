@@ -35,7 +35,38 @@ namespace PCBuilder.Model
                     item.Quantity += quantity;
             }
             OnCartUpdated?.Invoke(); 
-        } 
+        }
+        public int Count()
+        {
+            return _items.Count;
+        }
+
+        public float TotalPrice()
+        {
+            return _items.Sum(item => item.Component.Price * item.Quantity);
+        }
+
+        public IEnumerable<BasketItem> GetItems()
+        {
+            return _items;
+        }
+
+        public void Clear()
+        {
+            _items.Clear();
+            OnCartUpdated?.Invoke();
+        }
+
+        public int GetQuantity(Component component)
+        {
+            var item = _items.FirstOrDefault(item => item.Id == component.Id);
+            return item?.Quantity ?? 0;
+        }
+        public void SetItems(IEnumerable<BasketItem> items)
+        {
+            _items = items.ToList();
+            OnCartUpdated?.Invoke();
+        }
         public int GetQuantity(Component Component)
         {
             var item = _items.FirstOrDefault(item => item.Id == Component.Id);
