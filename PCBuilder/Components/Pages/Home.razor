@@ -10,111 +10,34 @@
 @inject ComponentProvider ComponentProvider
 @inject ShopBasket Basket;
 
-<PageTitle>Components</PageTitle>
+<PageTitle>PC Builder</PageTitle>
 
-@if (components is null)
-{
-    <p>Loading....</p>
-}
-else if (!components.Any())
-{
-    <p>No components found 😔</p>
-}
-else
-{
+
+<div class="hero-section text-white text-center py-5" style="background: linear-gradient(to bottom right, #7b4397, #dc2430);">
     <div class="container">
-        <div class="d-flex justify-content-between flex-column flex-md-row mb-1">
-            <div class="d-flex">
-                <div class="dropdown me-1">
-                    <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sort by @sortCriteria.ToString()
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Name)">Name</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Price)">Price</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Brand)">Type</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Rating)">Strength</a></li>
-                    </ul>
-                </div>
-                <input type="text" class="form-control" placeholder="Search for components..." @bind="searchTerm" @bind:event="oninput" />
-            </div>
-            <div class="d-flex justify-content-end mt-2 mt-md-0">
-                <a @onclick="GoToCart" class="btn btn-outline-primary">
-                    🛒Cart (@Basket.Count())
-                </a>
-            </div>
-        </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-            @foreach (var Component in FilteredComponents)
-            {
-                <div class="col">
-                    <StoreItem Component="Component" />
-                 </div>
-            }
-            @if (!FilteredComponents.Any())
-            {
-                <p>No components found 😔</p>
-            }
+        <h1 class="display-4 fw-bold">PC Building for Everyone</h1>
+        <p class="lead">BuildCores is a modern PC building platform that allows you to design your dream PC with ease. Find the best-performing parts at the cheapest prices.</p>
+        <div class="mt-4">
+            <a class="btn btn-primary btn-lg me-2" href="/builds" role="button">Start Building</a>
         </div>
     </div>
-}
+</div>
+
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-center">
+            <div class="build-card p-3 bg-light shadow rounded">
+                <h5>$1444.22</h5>
+                <h6>Professional Editing Build</h6>
+                <p>Intel Core i5-13600K, MSI VENTUS 2X OC GeForce RTX 4060 8 GB Video Card</p>
+                <a href="/build/1" class="btn btn-outline-primary">View Build</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @code {
 
-    private IEnumerable<Component>? components;
-    private string searchTerm = string.Empty;
-    private SortCriteria sortCriteria = SortCriteria.Name;
-
-    private IEnumerable<Component> FilteredComponents => components?.Where(FilterBySearchTerm).OrderBy(SortByCriteria) ?? Enumerable.Empty<Component>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        components = await ComponentProvider.GetAllComponentsAsync();
-
-        if (!components.Any())
-        {
-            Console.WriteLine("No components loaded.");
-        }
-
-        Basket.OnCartUpdated += StateHasChanged;
-    }
-
-    private void GoToCart()
-    {
-        NavigationManager.NavigateTo("/basket");
-    }
-
-    private void Sort(SortCriteria criteria)
-    {
-        sortCriteria = criteria;
-        StateHasChanged();
-    }
-
-    private bool FilterBySearchTerm(Component component)
-    {
-        if (string.IsNullOrWhiteSpace(searchTerm)) return true;
-
-        return component.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true
-            || component.Brand?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true;
-    }
-
-    private object SortByCriteria(Component component)
-    {
-        return sortCriteria switch
-        {
-            SortCriteria.Name => component.Name,
-            SortCriteria.Price => component.Price,
-            SortCriteria.Brand => component.Brand,
-            SortCriteria.Rating => component.Rating,
-            _ => component.Id
-        };
-    }
-
-    private enum SortCriteria
-    {
-        Name,
-        Price,
-        Brand,
-        Rating
-    }
+   
 }

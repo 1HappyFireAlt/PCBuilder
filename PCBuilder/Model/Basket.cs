@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Components;
 
 namespace PCBuilder.Model
 {
@@ -23,12 +24,13 @@ namespace PCBuilder.Model
             return _items;
         }
 
-        public void AddItem(Component Component, int quantity)
+        // This allows the admin to add new components to the shop
+        public void AddItem(Component component, int quantity)
         {
-            var item = _items.FirstOrDefault(item => item.Id == Component.Id);
+            var item = _items.FirstOrDefault(item => item.Id == component.Id);
             if (item == null)
             {
-                _items.Add(new BasketItem { Component = Component, Quantity = quantity });
+                _items.Add(new BasketItem { Component = component, Quantity = quantity });
             }
             else
             {
@@ -36,19 +38,16 @@ namespace PCBuilder.Model
             }
             OnCartUpdated?.Invoke(); 
         }
-        public int Count()
-        {
-            return _items.Count;
-        }
 
+        //This allows the admin to remove old component or unavailable component from the shop
+        public void RemoveItem(Component component)
+        {
+            _items.RemoveAll(_items => _items.Id == component.Id);
+            OnCartUpdated?.Invoke();
+        }
         public float TotalPrice()
         {
             return _items.Sum(item => item.Component.Price * item.Quantity);
-        }
-
-        public IEnumerable<BasketItem> GetItems()
-        {
-            return _items;
         }
 
         public void Clear()
@@ -66,11 +65,6 @@ namespace PCBuilder.Model
         {
             _items = items.ToList();
             OnCartUpdated?.Invoke();
-        }
-        public int GetQuantity(Component Component)
-        {
-            var item = _items.FirstOrDefault(item => item.Id == Component.Id);
-            return item?.Quantity ?? 0;
         }
     }
 }
