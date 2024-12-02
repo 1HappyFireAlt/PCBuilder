@@ -14,13 +14,16 @@
 
 @if (ShoppingCart.Count == 0)
 {
+    // Message displayed when the cart is empty
     <p>Your cart is empty. Please add items to your cart before checking out.</p>
     <div>
+        <!-- Button to redirect the user back to the store to add items -->
         <button @onclick="GoToStore" class="btn btn-outline-primary">Back to store</button>
     </div>
 }
 else
 {
+    <!-- Form for submitting order details -->
     <EditForm Model="Order" OnValidSubmit="SubmitOrder">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -45,6 +48,7 @@ else
             <InputText id="creditCard" class="form-control" @bind-Value="Order.CreditCardNumber" required />
         </div>
 
+        <!-- Display the shopping cart items -->
         <h4>Your Cart</h4>
         <table class="table">
             <thead>
@@ -56,6 +60,7 @@ else
                 </tr>
             </thead>
             <tbody>
+                <!-- Loop through each item in the shopping cart -->
                 @foreach (var item in ShoppingCart)
                 {
                     <tr>
@@ -67,9 +72,11 @@ else
             </tbody>
         </table>
 
+        <!-- Display the total cost of all items in the cart -->
         <h4>Total: @ShoppingCart.Sum(i => i.Component.Price).ToString("C")</h4>
 
         <div class="mt-4">
+            <!-- Button to submit the order -->
             <button type="submit" class="btn btn-primary">Submit Order</button>
         </div>
     </EditForm>
@@ -77,36 +84,49 @@ else
 
 @code {
     private List<BasketItem> ShoppingCart { get; set; } = new List<BasketItem>();
+
     private OrderModel Order = new OrderModel();
 
+    // Lifecycle method that is called when the component is initialized
     protected override void OnInitialized()
     {
+        // Retrieve the shopping cart data from the session (or simulate it here)
         ShoppingCart = GetShoppingCartFromSession();
     }
 
+    // Navigates the user to the store page
     private void GoToStore()
     {
+        // Use the NavigationManager to redirect to the store page
         NavigationManager.NavigateTo("/store");
     }
 
+    // Simulates retrieving the shopping cart items from a session or database
     private List<BasketItem> GetShoppingCartFromSession()
     {
+        // Returning a mock list of items for demonstration purposes
         return new List<BasketItem>
-        {
-            new BasketItem { Component = new Component { Name = "Component A", Price = 20.99f }, Quantity = 2 },
-            new BasketItem { Component = new Component { Name = "Component B", Price = 35.50f }, Quantity = 1 }
-        };
+    {
+        new BasketItem { Component = new Component { Name = "Component A", Price = 20.99f }, Quantity = 2 },
+        new BasketItem { Component = new Component { Name = "Component B", Price = 35.50f }, Quantity = 1 }
+    };
     }
 
+    // Handles the order submission
     private void SubmitOrder()
     {
+        // Log the order details to the console for debugging
         Console.WriteLine("Order Submitted:");
         Console.WriteLine($"Name: {Order.FullName}");
         Console.WriteLine($"Address: {Order.Address}");
         Console.WriteLine($"Email: {Order.Email}");
         Console.WriteLine($"Credit Card: {Order.CreditCardNumber}");
 
+        // Clear the shopping cart after the order is submitted
         ShoppingCart.Clear();
+
+        // Redirect the user to a thank-you page after order submission
         NavigationManager.NavigateTo("/thankyou");
     }
+
 }

@@ -1,0 +1,100 @@
+﻿@page "/builder"
+@using System.ComponentModel.DataAnnotations
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Components.Shared
+@using PCBuilder.Context
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager NavigationManager
+@inject Component Component
+@inject ComponentProvider ComponentProvider
+@inject ShopBasket Basket;
+
+@page "/build"
+@inject NavigationManager NavigationManager
+
+<h3>New Build</h3>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Total Cost: $@TotalCost</h4>
+        <button class="btn btn-outline-primary" @onclick="SubmitBuild">Submit Build</button>
+    </div>
+</div>
+
+<!-- Modal for Selecting a Component -->
+@if (ShowModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Choose @CurrentCategory</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (CurrentOptions.Any())
+                    {
+                        @foreach (var option in CurrentOptions)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>@option.Name ($@option.Price)</span>
+                                <button class="btn btn-sm btn-outline-primary" @onclick="() => SelectComponent(option)">
+                                    Select
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No components available for this category.</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    // Tracks the total cost of selected components
+    private float TotalCost => SelectedComponents.Values.Sum(c => c.Price);
+
+    // List of all available components grouped by category
+    private List<BasketItem> AvailableComponents = new()
+    {
+    };
+
+    // Selected components for each category
+    private Dictionary<string, Component> SelectedComponents = new();
+
+    // Modal state
+    private bool ShowModal = false;
+    private string CurrentCategory = string.Empty;
+    private List<Component> CurrentOptions = new();
+
+    // Selects a component and closes the modal
+    private void SelectComponent(Component component)
+    {
+        SelectedComponents[CurrentCategory] = component;
+        ShowModal = false;
+    }
+
+    // Closes the modal
+    private void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+    // Submit the build (you can extend this logic)
+    private void SubmitBuild()
+    {
+        // Logic for submitting the build (e.g., save to database)
+        NavigationManager.NavigateTo("/summary"); // Example redirection
+    }
+
+}
