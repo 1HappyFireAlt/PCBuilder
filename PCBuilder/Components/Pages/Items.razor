@@ -12,40 +12,35 @@
 
 <PageTitle>Components</PageTitle>
 
-<!-- Display a loading message while the components data is being fetched.-->
 @if (components is null)
 {
     <p>Loading....</p>
 }
-// If there are no components available, display a message indicating the absence of components.
 else if (!components.Any())
 {
     <p>No components found 😔</p>
 }
-// If components are available, render the components page layout.
 else
 {
     <div class="container">
         <div class="d-flex justify-content-between flex-column flex-md-row mb-1">
-            // Section for sorting options and a search bar.
+            <!-- Section for sorting options and a search bar.-->
             <div class="d-flex">
                 <div class="dropdown me-1">
-                    // Dropdown button for sorting components by various criteria.
+                    <!-- Dropdown button for sorting components by various criteria.-->
                     <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Sort by @sortCriteria.ToString()
                     </a>
                     <ul class="dropdown-menu">
-                        // Sorting options: Name, Price, Brand (Type), and Rating (Strength).
                         <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Name)">Name</a></li>
                         <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Price)">Price</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Brand)">Type</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Rating)">Strength</a></li>
+                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Brand)">Brand</a></li>
                     </ul>
                 </div>
-                // Input field for searching components by name or other attributes.
+                <!-- Input field for searching components by name or other attributes.-->
                 <input type="text" class="form-control" placeholder="Search for components..." @bind="searchTerm" @bind:event="oninput" />
             </div>
-            // Cart button displaying the current number of items in the basket.
+            <!-- Cart button displaying the current number of items in the basket.-->
             <div class="d-flex justify-content-end mt-2 mt-md-0">
                 <a @onclick="GoToCart" class="btn btn-outline-primary">
                     🛒Cart (@Basket.Count())
@@ -53,16 +48,15 @@ else
             </div>
         </div>
 
-        // Grid layout for displaying filtered components.
+        <!-- Grid layout for displaying filtered components.-->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
             @foreach (var Component in FilteredComponents)
             {
-                // Render each component using a "StoreItem" component.
+            <!-- Render each component using a "StoreItem" component.-->
                 <div class="col">
                     <StoreItem Component="Component" />
                 </div>
             }
-            // Display a message if no components match the search or filter criteria.
             @if (!FilteredComponents.Any())
             {
                 <p>No components found 😔</p>

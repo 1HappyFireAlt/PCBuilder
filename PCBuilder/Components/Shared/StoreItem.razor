@@ -4,6 +4,7 @@
 @using PCBuilder.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
+@inject ComponentProvider ComponentProvider
 @inject ShopBasket Basket
 @inject ProtectedSessionStorage ProtectedSessionStorage
 
@@ -29,19 +30,37 @@
                             }
                         </InputSelect>
                     </div>
-                    <div class="col-lg-6 col-12 mt-lg-0 mt-1">
-                        <button class="btn btn-primary position-relative w-100">
-                            Add to cart
-                            @if (Basket.GetQuantity(Component) > 0)
-                            {
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    @(Basket.GetQuantity(Component) * 100)
-                                    <span class="visually-hidden">@Component.Name in shopping cart</span>
-                                </span>
-                            }
-                        </button>
-                    </div>
+                        <div class="col-lg-6 col-12 mt-lg-0 mt-1">
+                            <button class="btn btn-primary position-relative w-100">
+                                Add to cart
+                                @if (Basket.GetQuantity(Component) > 0)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @(Basket.GetQuantity(Component) * 100)
+                                        <span class="visually-hidden">@Component.Name in shopping cart</span>
+                                    </span>
+                                }
+                            </button>
+                        </div>
                 </div>
+                @foreach (var component in components)
+                {
+                        <p class="card-text">
+                            Rating:
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Floor(component.Rating))
+                                {
+                                    <span class="text-warning">★</span> <!-- Full Star -->
+                                }
+                                else
+                                {
+                                    <span class="text-secondary">☆</span> <!-- Empty Star -->
+                                }
+                            }
+                            (@component.Rating.ToString("0.0"))
+                        </p>
+                }
             </EditForm>
         </div>
     </div>
@@ -50,6 +69,13 @@
 @code {
     [Parameter] 
     public Component Component { get; set; }
+
+    private IEnumerable<Component> components;
+
+    protected override async Task OnInitializedAsync()
+    {
+        components = await ComponentProvider.GetAllComponentsAsync(); // Load components from a service
+    }
 
     private int quantity = 1;
 

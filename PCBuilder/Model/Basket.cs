@@ -10,7 +10,7 @@ namespace PCBuilder.Model
         public int Id { get; set; }
 
         public event Action? OnCartUpdated;
-        public List<BasketItem> _items { get; set; } = new List<BasketItem>();
+        private List<BasketItem> _items { get; set; } = new List<BasketItem>();
         public int Count()
         {
             return _items.Count;
@@ -19,22 +19,18 @@ namespace PCBuilder.Model
         {
             _items = [];
         }
-        public IEnumerable<BasketItem> GetItems()
-        {
-            return _items;
-        }
 
         // This allows the admin to add new components to the shop
         public void AddItem(Component component, int quantity)
         {
-            var item = _items.FirstOrDefault(item => item.Id == component.Id);
-            if (item == null)
+            var existingItem = _items.FirstOrDefault(item => item.Id == component.Id);
+            if (existingItem != null)
             {
-                _items.Add(new BasketItem { Component = component, Quantity = quantity });
+                existingItem.Quantity++;
             }
             else
             {
-                    item.Quantity += quantity;
+                _items.Add(new BasketItem { Component = component, Quantity = quantity });
             }
             OnCartUpdated?.Invoke(); 
         }
@@ -43,6 +39,18 @@ namespace PCBuilder.Model
         public void RemoveItem(Component component)
         {
             _items.RemoveAll(_items => _items.Id == component.Id);
+            OnCartUpdated?.Invoke();
+        }
+
+        public void RemoveItem(Component component, int quantity)
+        {
+            var item = _items.FirstOrDefault(item => item.Id == component.Id);
+            if (item is not null)
+            {
+                item.Quantity -= quantity;
+                if (item.Quantity <= 0)
+                    _items.Remove(item);
+            }
             OnCartUpdated?.Invoke();
         }
         public float TotalPrice()
@@ -65,6 +73,11 @@ namespace PCBuilder.Model
         {
             _items = items.ToList();
             OnCartUpdated?.Invoke();
+        }
+
+        public IEnumerable<BasketItem> GetItems()
+        {
+            return _items;
         }
     }
 }

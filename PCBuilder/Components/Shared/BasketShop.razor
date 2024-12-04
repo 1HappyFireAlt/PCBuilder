@@ -10,14 +10,16 @@
 @inject NavigationManager NavigationManager
 
 
-<table class="table">
+<table class="table" style="background-color: white; vertical-align:middle;">
     <thead>
         <tr>
             <th>Product</th>
             <th>Quantity</th>
             <th>Price</th>
-            <th>Total</th>
-            <th></th>
+            @if (IsEditable)
+            {
+                <th scope="col">Actions</th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -27,6 +29,14 @@
                 <td>@item.Component.Name</td>
                 <td>@item.Quantity</td>
                 <td>@item.Component.Price.ToString("C")</td>
+                @if (IsEditable)
+                {
+                    <td scope="col">
+                        <button class="btn btn-outline-success mt-1 mt-md-0" @onclick="() => IncreaseQuantity(item)">➕</button>
+                        <button class="btn btn-outline-primary mt-1 mt-md-0" @onclick="() => DecreaseQuantity(item)">➖</button>
+                        <button class="btn btn-outline-danger mt-1 mt-md-0" @onclick="() => RemoveItems(item)">🗑</button>
+                    </td>
+                }
             </tr>
         }
 
@@ -34,13 +44,15 @@
 </table>
 <div class="d-flex justify-content-between">
     <div>
+        <button @onclick="GoToStore" class="btn btn-outline-primary">Back to components</button>
+    </div>
+    <div>
         <h4>Total Price: @(Basket.TotalPrice().ToString("C"))</h4>
     </div>
     <div>
         <button @onclick="GoToCheckout" class="btn btn-outline-primary">Checkout</button>
     </div>
 </div>
-}
 
 @code {
     [Parameter]
@@ -64,6 +76,16 @@
         Basket.AddItem(item.Component, 1);
     }
 
+    private void DecreaseQuantity(BasketItem item)
+    {
+        Basket.RemoveItem(item.Component, 1);
+    }
+
+    private void RemoveItems(BasketItem item)
+    {
+        Basket.RemoveItem(item.Component);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         StateHasChanged();
@@ -75,6 +97,6 @@
     }
     private void GoToStore()
     {
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/components");
     }
 }

@@ -10,7 +10,7 @@ namespace PCBuilder.Model
         public string Brand { get; set; }
         public float Price { get; set; }
         public int Quantity { get; set; }
-        public int Rating { get; set; }
+        public double Rating { get; set; }
         public string? ImageUrl { get; set; }
 
         public ICollection<Builds> Builds { get; set; }
