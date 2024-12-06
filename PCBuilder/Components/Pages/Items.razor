@@ -12,6 +12,26 @@
 
 <PageTitle>Components</PageTitle>
 
+<div class="container">
+        <div class="d-flex justify-content-between flex-column flex-md-row mb-1">
+            <!-- Section for sorting options and a search bar.-->
+            <div class="d-flex">
+                <select @onchange="SortComponents">
+                    <option value="Name" selected>Name</option>
+                    <option value="Price">Price</option>
+                    <option value="Brand">Brand</option>
+                </select>
+                <!-- Input field for searching components by name or other attributes.-->
+                <input @bind="searchTerm" @oninput="SearchComponents" placeholder="Search for components..." />
+            </div>
+            <!-- Cart button displaying the current number of items in the basket.-->
+            <div class="d-flex justify-content-end mt-2 mt-md-0">
+                <a @onclick="GoToCart" class="btn btn-outline-primary">
+                    🛒Cart (@Basket.Count())
+                </a>
+            </div>
+        </div>
+</div>
 @if (components is null)
 {
     <p>Loading....</p>
@@ -22,57 +42,30 @@ else if (!components.Any())
 }
 else
 {
-    <div class="container">
-        <div class="d-flex justify-content-between flex-column flex-md-row mb-1">
-            <!-- Section for sorting options and a search bar.-->
-            <div class="d-flex">
-                <div class="dropdown me-1">
-                    <!-- Dropdown button for sorting components by various criteria.-->
-                    <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sort by @sortCriteria.ToString()
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Name)">Name</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Price)">Price</a></li>
-                        <li><a class="dropdown-item" href="#" @onclick="() => Sort(SortCriteria.Brand)">Brand</a></li>
-                    </ul>
-                </div>
-                <!-- Input field for searching components by name or other attributes.-->
-                <input type="text" class="form-control" placeholder="Search for components..." @bind="searchTerm" @bind:event="oninput" />
-            </div>
-            <!-- Cart button displaying the current number of items in the basket.-->
-            <div class="d-flex justify-content-end mt-2 mt-md-0">
-                <a @onclick="GoToCart" class="btn btn-outline-primary">
-                    🛒Cart (@Basket.Count())
-                </a>
-            </div>
-        </div>
-
         <!-- Grid layout for displaying filtered components.-->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-            @foreach (var Component in FilteredComponents)
+            @foreach (var Component in components)
             {
-            <!-- Render each component using a "StoreItem" component.-->
+                <!-- Render each component using a "StoreItem" component.-->
                 <div class="col">
                     <StoreItem Component="Component" />
                 </div>
             }
-            @if (!FilteredComponents.Any())
+            @if (!components.Any())
             {
                 <p>No components found 😔</p>
             }
         </div>
-    </div>
 }
 
 @code {
 
     private IEnumerable<Component>? components;
     private string searchTerm = string.Empty;
-    private SortCriteria sortCriteria = SortCriteria.Name;
+    private string selectedSort = "Name";
+    private List<Component> filteredComponents = new();
 
-    private IEnumerable<Component> FilteredComponents => components?.Where(FilterBySearchTerm).OrderBy(SortByCriteria) ?? Enumerable.Empty<Component>();
-
+    // Called when the component is initialises
     protected override async Task OnInitializedAsync()
     {
         components = await ComponentProvider.GetAllComponentsAsync();
@@ -85,42 +78,32 @@ else
         Basket.OnCartUpdated += StateHasChanged;
     }
 
+    // Navigates the user to the basket page
     private void GoToCart()
     {
         NavigationManager.NavigateTo("/basket");
     }
 
-    private void Sort(SortCriteria criteria)
+    private void SearchComponents()
     {
-        sortCriteria = criteria;
-        StateHasChanged();
+           // Filter components whose Name or Brand contains the search term  
+            components = components
+                .Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                            c.Brand.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
     }
 
-    private bool FilterBySearchTerm(Component component)
+    // Sorts the components based on the selected criteria
+    private void SortComponents(ChangeEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(searchTerm)) return true;
+        selectedSort = e.Value.ToString();
 
-        return component.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true
-            || component.Brand?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true;
-    }
-
-    private object SortByCriteria(Component component)
-    {
-        return sortCriteria switch
+        components = selectedSort switch
         {
-            SortCriteria.Name => component.Name,
-            SortCriteria.Price => component.Price,
-            SortCriteria.Brand => component.Brand,
-            SortCriteria.Rating => component.Rating,
-            _ => component.Id
+            "Name" => components.OrderBy(c => c.Name).ToList(),
+            "Price" => components.OrderBy(c => c.Price).ToList(),
+            "Brand" => components.OrderBy(c => c.Brand).ToList(),
+            _ => components
         };
-    }
-
-    private enum SortCriteria
-    {
-        Name,
-        Price,
-        Brand,
-        Rating
     }
 }

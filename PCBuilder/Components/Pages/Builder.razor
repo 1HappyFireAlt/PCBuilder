@@ -24,12 +24,13 @@
 </div>
 
 <!-- Modal for Selecting a Component -->
-@if (ShowModal)
+@if (ShowModel)
 {
     <div class="modal fade show d-block" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
+                    <!-- Display the current category for certain components that are being selected-->
                     <h5 class="modal-title">Choose @CurrentCategory</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
                 </div>
@@ -40,6 +41,7 @@
                         {
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>@option.Name ($@option.Price)</span>
+                                <!-- Button to select the component-->
                                 <button class="btn btn-sm btn-outline-primary" @onclick="() => SelectComponent(option)">
                                     Select
                                 </button>
@@ -52,6 +54,7 @@
                     }
                 </div>
                 <div class="modal-footer">
+                    <!-- Close buttonf for model -->
                     <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
                 </div>
             </div>
@@ -72,8 +75,8 @@
     // Selected components for each category
     private Dictionary<string, Component> SelectedComponents = new();
 
-    // Modal state
-    private bool ShowModal = false;
+    // Model state
+    private bool ShowModel = false;
     private string CurrentCategory = string.Empty;
     private List<Component> CurrentOptions = new();
 
@@ -81,20 +84,20 @@
     private void SelectComponent(Component component)
     {
         SelectedComponents[CurrentCategory] = component;
-        ShowModal = false;
+        ShowModel = false;
     }
 
-    // Closes the modal
+    // Closes the model
     private void CloseModal()
     {
-        ShowModal = false;
+        ShowModel = false;
     }
 
     // Submit the build (you can extend this logic)
     private void SubmitBuild()
     {
-        // Logic for submitting the build (e.g., save to database)
-        NavigationManager.NavigateTo("/summary"); // Example redirection
+        // Logic for submitting the build 
+        NavigationManager.NavigateTo("/summary"); 
     }
 
 }

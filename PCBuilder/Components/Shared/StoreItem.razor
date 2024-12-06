@@ -8,16 +8,33 @@
 @inject ShopBasket Basket
 @inject ProtectedSessionStorage ProtectedSessionStorage
 
-<div class="card h-100">
-    <img src="/img/component/@Component.ImageUrl" class="card-img-top p-1" alt="@Component.Name" onerror="this.onerror = null;">
-    <div class="card-body d-flex flex-column">
+<div class="border rounded"
+    <img src="/img/components/@Component.ImageUrl" class="card-img-top p-1" alt="@Component.Name" onerror="this.onerror = null;">
+    <div class="card-body d-flex flex-column p-2 g-col-6">
         <h5>
-            <span class="badge bg-primary">@Component.Brand</span>
-            <span class="badge bg-success">@Component.Rating</span>
+            <span class="badge bg-primary p-2 g-col-6">@Component.Brand</span>
+            <span class="badge bg-success p-2 g-col-6">@Component.Rating</span>
         </h5>
-        <h5><span class="badge bg-danger">@Component.Price.ToString("C")</span></h5>
+        <h5><span class="badge bg-danger p-2 g-col-6">@Component.Price.ToString("C")</span></h5>
         <div class="d-flex flex-column flex-sm-row justify-content-betweem">
-            <h5 class="card-title">@Component.Name</h5>
+            <h5 class="card-title p-2 g-col-6">@Component.Name</h5>
+        </div>
+        <div class="p-2 g-col-6">
+            <p class="badge bg-primary">
+                Rating:
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= Math.Floor(Component.Rating))
+                    {
+                                <span class="text-warning">★</span> <!-- Full Star -->
+                    }
+                    else
+                    {
+                                <span class="text-secondary">☆</span> <!-- Empty Star -->
+                    }
+                }
+                (@Component.Rating.ToString("0.0"))
+            </p>
         </div>
         <div class="mt-auto">
             <EditForm Model="quantity" OnSubmit="AddToCart">
@@ -26,41 +43,23 @@
                         <InputSelect class="form-select w-100" @bind-Value="quantity" required>
                             @for (var i = 1; i <= 5; i++)
                             {
-                                <option value="@i">@(i * 100)</option>
+                                <option value="@i">@(i * 1)</option>
                             }
                         </InputSelect>
                     </div>
-                        <div class="col-lg-6 col-12 mt-lg-0 mt-1">
+                    <div class="col-lg-6 col-12 mt-lg-0 mt-1">
                             <button class="btn btn-primary position-relative w-100">
                                 Add to cart
                                 @if (Basket.GetQuantity(Component) > 0)
                                 {
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        @(Basket.GetQuantity(Component) * 100)
+                                        @(Basket.GetQuantity(Component) * 1)
                                         <span class="visually-hidden">@Component.Name in shopping cart</span>
                                     </span>
                                 }
                             </button>
-                        </div>
-                </div>
-                @foreach (var component in components)
-                {
-                        <p class="card-text">
-                            Rating:
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                if (i <= Math.Floor(component.Rating))
-                                {
-                                    <span class="text-warning">★</span> <!-- Full Star -->
-                                }
-                                else
-                                {
-                                    <span class="text-secondary">☆</span> <!-- Empty Star -->
-                                }
-                            }
-                            (@component.Rating.ToString("0.0"))
-                        </p>
-                }
+                    </div>
+                </div> 
             </EditForm>
         </div>
     </div>
