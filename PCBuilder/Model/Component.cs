@@ -12,8 +12,5 @@ namespace PCBuilder.Model
         public int Quantity { get; set; }
         public double Rating { get; set; }
         public string? ImageUrl { get; set; }
-
-        public ICollection<Builds> Builds { get; set; }
-        public ICollection<ShopBasket> Baskets { get; set; }
     }
 }

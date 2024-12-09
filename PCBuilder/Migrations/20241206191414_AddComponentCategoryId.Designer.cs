@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PCBuilder.Context;
 
@@ -10,9 +11,11 @@ using PCBuilder.Context;
 namespace PCBuilder.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241206191414_AddComponentCategoryId")]
+    partial class AddComponentCategoryId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -174,7 +177,7 @@ namespace PCBuilder.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("BasketItems", (string)null);
+                    b.ToTable("BasketItems");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.Builds", b =>
@@ -200,7 +203,7 @@ namespace PCBuilder.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Builds", (string)null);
+                    b.ToTable("Builds");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.Community", b =>
@@ -226,7 +229,7 @@ namespace PCBuilder.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Communities", (string)null);
+                    b.ToTable("Communities");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.Component", b =>
@@ -262,7 +265,7 @@ namespace PCBuilder.Migrations
 
                     b.HasIndex("ComponentCategoryId");
 
-                    b.ToTable("Components", (string)null);
+                    b.ToTable("Components");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.ComponentCategory", b =>
@@ -285,7 +288,7 @@ namespace PCBuilder.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ComponentCategory", (string)null);
+                    b.ToTable("ComponentCategory");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.Order", b =>
@@ -308,7 +311,7 @@ namespace PCBuilder.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.ShopBasket", b =>
@@ -334,7 +337,7 @@ namespace PCBuilder.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Baskets", (string)null);
+                    b.ToTable("Baskets");
                 });
 
             modelBuilder.Entity("PCBuilder.Model.User", b =>
