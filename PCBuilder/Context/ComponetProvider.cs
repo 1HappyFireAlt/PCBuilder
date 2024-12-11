@@ -16,6 +16,10 @@ namespace PCBuilder.Context
         {
             return await _context.Components.OrderBy(Component => Component.Name).ToListAsync();
         }
+        public async Task<List<Component>> GetComponentsByCategoryAsync(ComponentCategory category)
+        {
+            return await _context.Components.Where(Component => Component.Category == category.Name).OrderBy(Component => Component.Name).ToListAsync();
+        }
 
         public Component? GetComponent(int id)
         {

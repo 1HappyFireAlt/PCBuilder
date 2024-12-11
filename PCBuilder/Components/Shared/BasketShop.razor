@@ -13,9 +13,9 @@
 <table class="table" style="background-color: white; vertical-align:middle;">
     <thead>
         <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
             @if (IsEditable)
             {
                 <th scope="col">Actions</th>
@@ -26,9 +26,9 @@
         @foreach (var item in Basket.GetItems())
         {
             <tr>
-                <td>@item.Component.Name</td>
-                <td>@item.Quantity</td>
-                <td>@item.Component.Price.ToString("C")</td>
+                <td scope="col">@item.Component.Name</td>
+                <td scope="col">@item.Quantity</td>
+                <td scope="col">@item.Component.Price.ToString("C")</td>
                 @if (IsEditable)
                 {
                     <td scope="col">
@@ -56,7 +56,7 @@
 
 @code {
     [Parameter]
-    public bool IsEditable { get; set; } = false;
+    public bool IsEditable { get; set; } = true;
 
 
     protected override void OnInitialized()

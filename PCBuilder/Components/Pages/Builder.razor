@@ -43,7 +43,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- Display the current category for certain components that are being selected-->
-                    <h5 class="modal-title">Choose @CurrentCategory</h5>
+                    <h5 class="modal-title">Choose @CurrentCategory.Name</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -79,41 +79,77 @@
     // Tracks the total cost of selected components
     private float TotalCost => SelectedComponents.Values.Sum(c => c.Price);
 
-    // List of all available components grouped by category
-    private List<BasketItem> AvailableComponents = new()
-    {
-    };
-
-    // Selected components for each category
     private Dictionary<string, Component> SelectedComponents = new();
-
-    // Model state
     private bool ShowModel = false;
-    private string CurrentCategory = string.Empty;
     private List<Component> CurrentOptions = new();
+    private ComponentCategory CurrentCategory;
 
     private List<ComponentCategory> ComponentCategories = new()
     {
-        new ComponentCategory { Name = "Case", IconClass = "bi bi-box" },
-        new ComponentCategory { Name = "CPU", IconClass = "bi bi-cpu" },
-        new ComponentCategory { Name = "Motherboard", IconClass = "bi bi-motherboard" },
-        new ComponentCategory { Name = "GPU", IconClass = "bi bi-gpu"},
-        new ComponentCategory { Name = "Power Supply", IconClass = "bi bi-powersupply"},
-        new ComponentCategory { Name = ""}
+        new ComponentCategory
+        {
+            Name = "Processor",
+            IconClass = "bi bi-cpu",
+        },
+        new ComponentCategory
+        {
+            Name = "Motherboard",
+            IconClass = "bi bi-motherboard",
+        },
+        new ComponentCategory
+        {
+            Name = "Storage",
+            IconClass = "bi bi-storage",
+        },
+        new ComponentCategory
+        {
+            Name = "Graphics Card",
+            IconClass = "bi bi-gpu",
+        },
+        new ComponentCategory
+        {
+            Name = "Power Supply",
+            IconClass = "bi bi-powersupply",
+        },
+        new ComponentCategory
+        {
+            Name = "Cooling",
+            IconClass = "bi bi-cooling",
+        },
+        new ComponentCategory
+        {
+            Name = "Case",
+            IconClass = "bi bi-case",
+        },
+        new ComponentCategory
+        {
+            Name = "Monitor",
+            IconClass = "bi bi-monitor",
+        },
+        new ComponentCategory
+        {
+            Name = "Mouse",
+            IconClass = "bi bi-mouse",
+        },
+        new ComponentCategory
+        {
+            Name = "Keyboard",
+            IconClass = "bi bi-keyboard",
+        }
     };
 
     // Opens the model to select a component
-    private void OpenComponentSelection(ComponentCategory category)
+    private async Task OpenComponentSelection(ComponentCategory category)
     {
-        CurrentCategory = category.Category;
-        CurrentOptions = category.Options;
+        CurrentCategory = category;
+        CurrentOptions = await ComponentProvider.GetComponentsByCategoryAsync(category);
         ShowModel = true;
     }
 
     // Selects a component and closes the modal
     private void SelectComponent(Component component)
     {
-        SelectedComponents[CurrentCategory] = component;
+        SelectedComponents[CurrentCategory.Name] = component;
         ShowModel = false;
     }
 
@@ -126,7 +162,6 @@
     // Submit the build (you can extend this logic)
     private void SubmitBuild()
     {
-        // Logic for submitting the build 
         NavigationManager.NavigateTo("/summary"); 
     }
 

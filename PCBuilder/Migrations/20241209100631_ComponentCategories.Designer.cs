@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PCBuilder.Context;
 
@@ -10,9 +11,11 @@ using PCBuilder.Context;
 namespace PCBuilder.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241209100631_ComponentCategories")]
+    partial class ComponentCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -236,10 +239,6 @@ namespace PCBuilder.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -20,6 +20,7 @@
                     <option value="Name" selected>Name</option>
                     <option value="Price">Price</option>
                     <option value="Brand">Brand</option>
+                    <option value="Category">Category</option>
                 </select>
                 <!-- Input field for searching components by name or other attributes.-->
                 <input @bind="searchTerm" @oninput="SearchComponents" placeholder="Search for components..." />
@@ -104,6 +105,7 @@ else
             "Name" => components.OrderBy(c => c.Name).ToList(),
             "Price" => components.OrderBy(c => c.Price).ToList(),
             "Brand" => components.OrderBy(c => c.Brand).ToList(),
+            "Category" => components.OrderBy(c => c.Category).ToList(),
             _ => components
         };
     }
