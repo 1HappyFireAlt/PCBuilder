@@ -1,5 +1,4 @@
-﻿@page "/basket"
-@using System.ComponentModel.DataAnnotations
+﻿@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using PCBuilder.Components.Account.Shared
 @using PCBuilder.Model
@@ -10,6 +9,7 @@
 @inject NavigationManager NavigationManager
 
 
+<!-- Table to display the items in the basket -->
 <table class="table" style="background-color: white; vertical-align:middle;">
     <thead>
         <tr>
@@ -23,18 +23,22 @@
         </tr>
     </thead>
     <tbody>
+        <!-- Goes through all items in the basket -->
         @foreach (var item in Basket.GetItems())
         {
             <tr>
                 <td scope="col">@item.Component.Name</td>
-                <td scope="col">@item.Quantity</td>
+                <td scope="col">@(item.Quantity * 1)</td>
                 <td scope="col">@item.Component.Price.ToString("C")</td>
                 @if (IsEditable)
                 {
                     <td scope="col">
+                        <!-- Button to increase the quantity of the item -->
                         <button class="btn btn-outline-success mt-1 mt-md-0" @onclick="() => IncreaseQuantity(item)">➕</button>
+                        <!-- Button to decrease the quantity of the item -->
                         <button class="btn btn-outline-primary mt-1 mt-md-0" @onclick="() => DecreaseQuantity(item)">➖</button>
-                        <button class="btn btn-outline-danger mt-1 mt-md-0" @onclick="() => RemoveItems(item)">🗑</button>
+                        <!-- Button to remove the item from the basket -->
+                        <button class="btn btn-outline-danger mt-1 mt-md-0" @onclick="() => RemoveItem(item)">🗑</button>
                     </td>
                 }
             </tr>
@@ -44,19 +48,19 @@
 </table>
 <div class="d-flex justify-content-between">
     <div>
+        <!-- Button to navigate back to the components store -->
         <button @onclick="GoToStore" class="btn btn-outline-primary">Back to components</button>
     </div>
     <div>
+        <!-- Display the total price of all items in the basket -->
         <h4>Total Price: @(Basket.TotalPrice().ToString("C"))</h4>
-    </div>
-    <div>
-        <button @onclick="GoToCheckout" class="btn btn-outline-primary">Checkout</button>
     </div>
 </div>
 
 @code {
+    // Parameter to determine if the cart is editable; default value is false
     [Parameter]
-    public bool IsEditable { get; set; } = true;
+    public bool IsEditable { get; set; } = false;
 
 
     protected override void OnInitialized()
@@ -70,19 +74,24 @@
         await ProtectedSessionStorage.SetAsync("cart", Basket.GetItems());
     }
 
-
+    // Method to increase the quantity of a specific item in the basket
     private void IncreaseQuantity(BasketItem item)
     {
+        // Add one unit of the item's component to the basket
         Basket.AddItem(item.Component, 1);
     }
 
+    // Method to decrease the quantity of a specific item in the basket
     private void DecreaseQuantity(BasketItem item)
     {
+        // Remove one unit of the item's component from the basket
         Basket.RemoveItem(item.Component, 1);
     }
 
-    private void RemoveItems(BasketItem item)
+    // Method to completely remove an item from the basket
+    private void RemoveItem(BasketItem item)
     {
+        // Remove the item entirely from the basket
         Basket.RemoveItem(item.Component);
     }
 
@@ -91,10 +100,7 @@
         StateHasChanged();
     }
 
-    private void GoToCheckout()
-    {
-        NavigationManager.NavigateTo("/checkout");
-    }
+    // Method to navigate back to the components page
     private void GoToStore()
     {
         NavigationManager.NavigateTo("/components");

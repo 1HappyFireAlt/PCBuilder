@@ -16,14 +16,14 @@
         <div class="d-flex justify-content-between flex-column flex-md-row mb-1">
             <!-- Section for sorting options and a search bar.-->
             <div class="d-flex">
-                <select @onchange="SortComponents">
+            <select class="btn btn-outline-primary dropdown-toggle" @onchange="SortComponents">
                     <option value="Name" selected>Name</option>
                     <option value="Price">Price</option>
                     <option value="Brand">Brand</option>
                     <option value="Category">Category</option>
                 </select>
                 <!-- Input field for searching components by name or other attributes.-->
-                <input @bind="searchTerm" @oninput="SearchComponents" placeholder="Search for components..." />
+            <input class ="form-control" @bind ="searchTerm" @oninput ="SearchComponents" placeholder="Search for components..." />
             </div>
             <!-- Cart button displaying the current number of items in the basket.-->
             <div class="d-flex justify-content-end mt-2 mt-md-0">
@@ -62,7 +62,7 @@ else
 @code {
 
     private IEnumerable<Component>? components;
-    private string searchTerm = string.Empty;
+    private string searchTerm = "";
     private string selectedSort = "Name";
     private List<Component> filteredComponents = new();
 
@@ -71,12 +71,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         components = await ComponentProvider.GetAllComponentsAsync();
-
-        if (!components.Any())
-        {
-            Console.WriteLine("No components loaded.");
-        }
-
         Basket.OnCartUpdated += StateHasChanged;
     }
 

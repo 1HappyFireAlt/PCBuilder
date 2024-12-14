@@ -10,7 +10,7 @@ namespace PCBuilder.Model
         public int Id { get; set; }
 
         public event Action? OnCartUpdated;
-        private List<BasketItem> _items { get; set; } = new List<BasketItem>();
+        private List<BasketItem> _items;
         public int Count()
         {
             return _items.Count;
@@ -23,14 +23,14 @@ namespace PCBuilder.Model
         // This allows the admin to add new components to the shop
         public void AddItem(Component component, int quantity)
         {
-            var existingItem = _items.FirstOrDefault(item => item.Id == component.Id);
-            if (existingItem != null)
+            var item = _items.FirstOrDefault(item => item.Component.Id == component.Id);
+            if (item is null)
             {
-                existingItem.Quantity++;
+                _items.Add(new BasketItem { Component = component, Quantity = quantity });
             }
             else
             {
-                _items.Add(new BasketItem { Component = component, Quantity = quantity });
+                item.Quantity += quantity;
             }
             OnCartUpdated?.Invoke(); 
         }
@@ -38,13 +38,13 @@ namespace PCBuilder.Model
         //This allows the admin to remove old component or unavailable component from the shop
         public void RemoveItem(Component component)
         {
-            _items.RemoveAll(_items => _items.Id == component.Id);
+            _items.RemoveAll(_items => _items.Component.Id == component.Id);
             OnCartUpdated?.Invoke();
         }
 
         public void RemoveItem(Component component, int quantity)
         {
-            var item = _items.FirstOrDefault(item => item.Id == component.Id);
+            var item = _items.FirstOrDefault(item => item.Component.Id == component.Id);
             if (item is not null)
             {
                 item.Quantity -= quantity;
