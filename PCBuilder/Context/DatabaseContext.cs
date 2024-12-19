@@ -8,6 +8,7 @@ namespace PCBuilder.Context
     {
         private IWebHostEnvironment _environment;
         public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Component> Components { get; set; }
         public DatabaseContext(DbContextOptions<DatabaseContext> options, IWebHostEnvironment environment) : base(options)
         {

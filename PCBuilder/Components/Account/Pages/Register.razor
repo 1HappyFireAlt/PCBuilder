@@ -69,6 +69,27 @@
                             </small>
                         </div>
                         <div class="form-group mb-2">
+                            <label for="street">Street</label>
+                            <InputText id="street" class="form-control" placeholder="Street" @bind-Value="Model.Address" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.Address)" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="city">City</label>
+                            <InputText id="city" class="form-control" placeholder="City" @bind-Value="Model.City" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.City)" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="postcode">Post Code</label>
+                            <InputText id="postcode" class="form-control" placeholder="Post Code" @bind-Value="Model.PostCode" />
+                            <div class="small">
+                                <ValidationMessage For="@(() => Model!.PostCode)" />
+                            </div>
+                        </div>
+                        <div class="form-group mb-2">
                             <label for="password">Password</label>
                             <InputText id="password" type="password" class="form-control border-success" placeholder="Password" @bind-Value="Model.Password" />
                             <div class="small">
@@ -113,6 +134,9 @@
                 Name = Model.Name,
                 Gender = Model.Gender,
                 DateOfBirth = Model.DateOfBirth,
+                Address = Model.Address,
+                City = Model.City,
+                PostCode = Model.PostCode
         };
 
 
@@ -156,6 +180,15 @@
 
         [Required(ErrorMessage = "Please enter your date of birth")]
         public DateTime? DateOfBirth { get; set; }
+
+        [Required(ErrorMessage = "Please enter your address.")]
+        public string Address { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter your city.")]
+        public string City { get; set; } = "";
+
+        [Required(ErrorMessage = "Please enter your post code.")]
+        public string PostCode { get; set; } = "";
 
     }
 }
