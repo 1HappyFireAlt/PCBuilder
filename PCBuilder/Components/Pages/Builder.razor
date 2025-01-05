@@ -9,7 +9,8 @@
 @inject NavigationManager NavigationManager
 @inject Component Component
 @inject ComponentProvider ComponentProvider
-@inject ShopBasket Basket;
+@inject ShopBasket Basket
+
 
 <h3>New Build</h3>
 
@@ -18,27 +19,43 @@
         <h4>Total Cost: $@TotalCost</h4>
         <button class="btn btn-outline-primary" @onclick="SubmitBuild">Submit Build</button>
     </div>
+    <div>
+        <div class="list-group">
+            @foreach (var category in ComponentCategories)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="@category.IconClass me-2"></i> @category.Name
+                    </div>
 
-    <!-- Component List -->
-    <div class="list-group">
-        @foreach (var category in ComponentCategories)
-        {
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <!-- Icon and Name -->
-                <div>
-                    <i class="@category.IconClass me-2"></i> @category.Name
+                    @if (category.SelectedComponent != null)
+                    {
+                        <div>
+                            <td>
+                                <img src="/img/components/@category.SelectedComponent.ImageUrl" alt="@category.SelectedComponent.Name" class="img-thumbnail" style="max-width: 100px;">
+                            </td>
+                            <p><strong>@category.SelectedComponent.Name</strong></p>
+                            <p>Brand: @category.SelectedComponent.Brand</p>
+                            <p>Price: $@category.SelectedComponent.Price</p>
+                        </div>
+                        <button class="btn btn-danger" @onclick="() => RemoveComponent(category)">
+                            Remove
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-primary" @onclick="() => OpenComponentSelection(category)">
+                            + Choose @category.Name
+                        </button>
+                    }
                 </div>
-
-                <!-- Choose Button -->
-                <button class="btn btn-outline-primary" @onclick="() => OpenComponentSelection(category)">+ Choose @category.Name</button>
+                }
             </div>
-        }
+        </div>
     </div>
-</div>
-<!-- Modal for Selecting a Component -->
 @if (ShowModel)
-{
-    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+{  
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -47,42 +64,56 @@
                     <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    @if (CurrentOptions.Any())
-                    {
-                        @foreach (var option in CurrentOptions)
-                        {
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>@option.Name ($@option.Price)</span>
-                                <!-- Button to select the component-->
-                                <button class="btn btn-sm btn-outline-primary" @onclick="() => SelectComponent(option)">
-                                    Select
-                                </button>
+                @foreach (var component in CurrentOptions)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <tr>
+                        <!-- Component Name -->
+                        <td>@component.Category</td>
+
+                        <!-- Product Image -->
+                        <td>
+                            <img src="/img/components/@component.ImageUrl" alt="@component.Name" class="img-thumbnail" style="max-width: 100px;">
+                        </td>
+
+                        <!-- Product Details -->
+                        <td>
+                            <div>
+                                <strong>@component.Name</strong>
+                                <p class="mb-1">Brand: @component.Brand</p>
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No components available for this category.</p>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <!-- Close buttonf for model -->
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
-                </div>
+                        </td>
+
+                        <!-- Price -->
+                        <td>£@component.Price</td>
+
+                        <button class="btn btn-sm btn-outline-primary" @onclick="() => SelectComponent(component)">
+                            Select
+                        </button>
+                    </tr>
+                    </div>
+                }
             </div>
         </div>
     </div>
+</div>
 }
 
-
 @code {
-    // Tracks the total cost of selected components
-    private float TotalCost => SelectedComponents.Values.Sum(c => c.Price);
+    private float TotalCost => ComponentCategories.Where(c => c.SelectedComponent != null)
+        .Sum(c => c.SelectedComponent.Price);
 
     private Dictionary<string, Component> SelectedComponents = new();
     private bool ShowModel = false;
     private List<Component> CurrentOptions = new();
     private ComponentCategory CurrentCategory;
+
+    private void SelectComponent(Component component)
+    {
+        CurrentCategory.SelectedComponent = component;
+        CloseModal();
+    }
+
 
     private List<ComponentCategory> ComponentCategories = new()
     {
@@ -138,7 +169,6 @@
         }
     };
 
-    // Opens the model to select a component
     private async Task OpenComponentSelection(ComponentCategory category)
     {
         CurrentCategory = category;
@@ -146,23 +176,18 @@
         ShowModel = true;
     }
 
-    // Selects a component and closes the modal
-    private void SelectComponent(Component component)
+    private void RemoveComponent(ComponentCategory category)
     {
-        SelectedComponents[CurrentCategory.Name] = component;
-        ShowModel = false;
+        category.SelectedComponent = null;
     }
 
-    // Closes the model
     private void CloseModal()
     {
         ShowModel = false;
     }
 
-    // Submit the build (you can extend this logic)
     private void SubmitBuild()
     {
-        NavigationManager.NavigateTo("/summary"); 
+        NavigationManager.NavigateTo("/summary");
     }
-
 }

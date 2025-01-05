@@ -1,0 +1,26 @@
+﻿@page "/my-orders"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using PCBuilder.Components.Account.Shared
+@using PCBuilder.Model
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@inject OrderProvider OrderProvider
+@inject UserProvider UserProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>My Orders</PageTitle>
+
+@if (orders is null)
+{
+    <p>Loading...</p>
+}
+else if (!orders.Any())
+{
+    <p>🙁 No orders found</p>
+}
+
+@code {
+    private IEnumerable<Order>? orders;
+    private Order? selectedOrder;
+}

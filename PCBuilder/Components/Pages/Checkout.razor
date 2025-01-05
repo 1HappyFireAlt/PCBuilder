@@ -1,20 +1,10 @@
 ﻿@page "/checkout"
-@attribute [Authorize]
 @using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using PCBuilder.Context
 @using PCBuilder.Components.Account.Shared
 @using PCBuilder.Model
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject OrderProvider OrderProvider
-@inject PaymentDetails PaymentDetails
 @inject BasketItem BasketItem
-@inject ShopBasket Basket
-@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 
 <h3>Basket</h3>
@@ -22,117 +12,118 @@
 
 <h3>Checkout</h3>
 
-<h3>Checkout</h3>
-<div class="card mb-1">
-    <div class="card-body bg-light">
-        <h4 class="card-title">Order Summary</h4>
-        <BasketShop />
+@if (ShoppingCart.Count == 0)
+{
+    // Message displayed when the cart is empty
+    <p>Your cart is empty. Please add items to your cart before checking out.</p>
+    <div>
+        <!-- Button to redirect the user back to the store to add items -->
+        <button @onclick="GoToStore" class="btn btn-outline-primary">Back to store</button>
     </div>
-</div>
+}
+else
+{
+    <!-- Form for submitting order details -->
+    <EditForm Model="Order" OnValidSubmit="SubmitOrder">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<EditForm EditContext="editContext" OnValidSubmit="MakePayment">
-    <DataAnnotationsValidator />
-    <div class="row mb-2">
-        <div class="col-lg-6 col-12 mt-1">
-            <div class="card h-100">
-                <div class="card-body bg-light">
-                    <h4 class="card-title">Customer</h4>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Name</label>
-                        <input class="form-control" value="@GetFormattedName(user)" disabled />
-                    </div>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" rows="3" style="resize: none" disabled />
-                    </div>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Email</label>
-                        <input class="form-control" value="@user.Email" disabled />
-                    </div>
-                </div>
-            </div>
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <InputText id="fullName" class="form-control" @bind-Value="Order.NameOnCard" required />
         </div>
-        <div class="col-lg-6 col-12 mt-lg-1 mt-2">
-            <div class="card h-100">
-                <div class="card-body bg-light">
-                    <h4 class="card-title">Payment</h4>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Name on card</label>
-                        <InputText class="form-control" placeholder="@GetFormattedName(user)" @bind-Value="PaymentDetails.NameOnCard" />
-                    </div>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Card number</label>
-                        <InputText class="form-control" placeholder="0000-0000-0000-0000" @bind-Value="PaymentDetails.CardNumber" />
-                    </div>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Expiry Date</label>
-                        <InputText class="form-control" placeholder="12/23" @bind-Value="PaymentDetails.ExpiryDate" />
-                    </div>
-                    <div class="form-group mb-1">
-                        <label class="form-label">Security Code</label>
-                        <InputText class="form-control" placeholder="123" @bind-Value="PaymentDetails.SecurityCode" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="d-flex justify-content-between">
-        <div>
-            <button @onclick="GoToCart" class="btn btn-outline-primary">🛒 Back to Cart</button>
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <InputText id="address" class="form-control" @bind-Value="Order.CardNumber" required />
         </div>
-        <div>
-            <button type="submit" class="btn btn-outline-danger">
-            </button>
-        </div>
-    </div>
 
-</EditForm>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="Order.ExpiryDate" type="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="creditCard" class="form-label">Credit Card</label>
+            <InputText id="creditCard" class="form-control" @bind-Value="Order.SecurityCode" required />
+        </div>
+
+        <!-- Display the shopping cart items -->
+        <h4>Your Cart</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through each item in the shopping cart -->
+                @foreach (var item in ShoppingCart)
+                {
+                    <tr>
+                        <td>@item.Component.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Component.Price.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Display the total cost of all items in the cart -->
+        <h4>Total: @ShoppingCart.Sum(i => i.Component.Price).ToString("C")</h4>
+
+        <div class="mt-4">
+            <!-- Button to submit the order -->
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+        </div>
+    </EditForm>
+}
 
 @code {
-    private User user;
-    private EditContext editContext;
-    private bool isPaying;
+    private List<BasketItem> ShoppingCart { get; set; } = new List<BasketItem>();
+    private PaymentDetails Order = new PaymentDetails();
 
-
-    protected override async Task OnInitializedAsync()
+    // Lifecycle method that is called when the component is initialized
+    protected override void OnInitialized()
     {
-        PaymentDetails = new PaymentDetails();
-        editContext = new EditContext(PaymentDetails);
-
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var username = authState!.User!.Identity!.Name!;
+        // Retrieve the shopping cart data from the session (or simulate it here)
+        ShoppingCart = GetShoppingCartFromSession();
     }
 
-    private async Task MakePayment()
+    // Navigates the user to the store page
+    private void GoToStore()
     {
-        await SimulatePayment();
-
-        await OrderProvider.CreateOrder(user, Basket.GetItems());
-        Basket.Clear();
-        NavigationManager.NavigateTo("/thank-you");
+        // Use the NavigationManager to redirect to the store page
+        NavigationManager.NavigateTo("/store");
     }
 
-    private async Task SimulatePayment()
+    // Simulates retrieving the shopping cart items from a session or database
+    private List<BasketItem> GetShoppingCartFromSession()
     {
-        isPaying = true;
-        StateHasChanged();
-
-        await Task.Delay(2000);
-
-        isPaying = false;
-        StateHasChanged();
+        // Returning a mock list of items for demonstration purposes
+        return new List<BasketItem>
+        {
+            new BasketItem { Component = new Component { Name = "Component A", Price = 20.99f }, Quantity = 2 },
+            new BasketItem { Component = new Component { Name = "Component B", Price = 35.50f }, Quantity = 1 }
+        };
     }
 
-    private void GoToCart()
+    // Handles the order submission
+    private void SubmitOrder()
     {
-        NavigationManager.NavigateTo("/cart");
-    }
+        // Log the order details to the console for debugging
+        Console.WriteLine("Order Submitted:");
+        Console.WriteLine($"Name: {Order.NameOnCard}");
+        Console.WriteLine($"Address: {Order.CardNumber}");
+        Console.WriteLine($"Email: {Order.ExpiryDate}");
+        Console.WriteLine($"Credit Card: {Order.SecurityCode}");
 
-
-    private string GetFormattedName(User user)
-    {
-        if (user == null) return "Unknown User";
-        return $"{user.Name}";
+        // Clear the shopping cart after the order is submitted
+        ShoppingCart.Clear();
+        // Redirect the user to a thank-you page after order submission
+        NavigationManager.NavigateTo("/thankyou");
     }
 }
